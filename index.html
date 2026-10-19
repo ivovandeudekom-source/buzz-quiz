@@ -220,7 +220,7 @@ body.bad-flash{animation:badflash .6s}
 .optlist{display:flex;flex-direction:column;gap:10px;justify-content:center;perspective:1200px}
 .optlist .ans{min-height:0;padding:10px 14px;font-size:clamp(.95rem,1.6vw,1.3rem);border-radius:14px}
 .mid{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:end;min-height:0}
-.mid .pslot{width:0;transition:width .4s}
+.mid .pslot{width:0;transition:width .4s;align-self:stretch}
 .mid .pslot.on{width:min(22vw,24vh)}
 .mid .podia{padding-top:calc(var(--ah,120px) * .5)}
 .mid .focus{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;min-height:0}
@@ -248,7 +248,7 @@ body.bad-flash{animation:badflash .6s}
 .tower.out .lbl{color:var(--bad)}
 .tower .d{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:var(--display);padding:2px 8px;border-radius:8px;background:var(--ok);color:#06291a;animation:popup .7s both;z-index:3}
 .tower .d.neg{background:var(--bad);color:#fff}
-.titlewall{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,rgba(255,61,138,.35),rgba(18,11,46,.95) 65%);animation:fade .4s both}
+.titlewall{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,rgba(120,30,90,1),rgba(18,11,46,1) 65%);animation:fade .4s both}
 .titlewall h1{font-size:clamp(3rem,12vw,9rem);color:var(--b3);text-shadow:0 .06em 0 var(--accent),0 0 60px rgba(255,212,0,.5);animation:titlein 1.1s cubic-bezier(.2,1.4,.3,1) both}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -707,7 +707,7 @@ const Presenter={el:null,img:null,pose:'base',react_t:null,hooked:new WeakSet(),
   say(txt,ms=4000){const b=this.el?.querySelector('.bubble');if(!b)return;b.textContent=txt;b.hidden=!txt;clearTimeout(this.bub_t);if(txt)this.bub_t=setTimeout(()=>{b.hidden=true},ms)},
   show(big){if(!this.el)this.mount();this.el.classList.remove('off');this.el.classList.toggle('big',!!big);if(!big)this.place()},
   hide(){this.el?.classList.add('off')},
-  place(){const slot=document.querySelector('.pslot.on');if(!slot||!this.el||this.el.classList.contains('big'))return;const r=slot.getBoundingClientRect();Object.assign(this.el.style,{left:r.left+'px',bottom:(innerHeight-r.bottom+40)+'px',height:Math.min(r.height+60,innerHeight*.42)+'px'})},
+  place(){const slot=document.querySelector('.pslot.on');if(!slot||!this.el||this.el.classList.contains('big'))return;const r=slot.getBoundingClientRect();Object.assign(this.el.style,{left:r.left+'px',bottom:(innerHeight-r.bottom+40)+'px',height:Math.max(200,Math.min(r.height+60,innerHeight*.42))+'px'})},
   loop(){let last=0,talking=false;const f=()=>{if(!this.el)return;const a=this.amp();const now=performance.now();if(!this.reacting){const t=a>0.035;if(t!==talking&&now-last>110){talking=t;last=now;this.set(t?'talk':'base')}}this.img.style.transform=`translateY(${-a*40}px) rotate(${a*6}deg)`;requestAnimationFrame(f)};requestAnimationFrame(f)},
 };
 function confetti(ms=6000){const c=document.createElement('canvas');c.id='confetti';document.body.appendChild(c);const x=c.getContext('2d');const W=c.width=innerWidth,H=c.height=innerHeight;const cols=['#ff3d8a','#ffd400','#2f7bff','#2ecc71','#ff7a1a','#fff'];const P=Array.from({length:220},()=>({x:Math.random()*W,y:-20-Math.random()*H,vx:(Math.random()-.5)*2,vy:2+Math.random()*4,r:4+Math.random()*6,c:cols[Math.random()*cols.length|0],a:Math.random()*6,va:(Math.random()-.5)*.3}));const t0=Date.now();(function f(){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.va;if(p.y>H+20){p.y=-20;p.x=Math.random()*W}x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()});if(Date.now()-t0<ms)requestAnimationFrame(f);else c.remove()})()}
@@ -1108,7 +1108,7 @@ const Host={
       const ch=S.players[S.chooser];
       app.innerHTML=`<div class="host"><div class="topbar"><span class="rname">${esc(R.name)}<small>Ronde ${S.roundIdx+1}/${S.order.length}</small></span><span class="qn"></span><div class="timer"><i id="tbar"></i></div></div>
         <div class="stage3"><div class="chanpick" style="grid-template-columns:1fr 1fr">${Object.entries(CHANNELS).map(([k,c])=>`<div class="chan ${S.channel===k?'pick':''}" style="background:${c.color}">${esc(c.name)}</div>`).join('')}</div>
-        <div class="mid"><div class="pslot on"></div><div class="focus">${ch?`<img class="closeup" src="${charImg(ch.char)}" alt="" style="height:min(34vh,260px);filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))"><div class="big" style="font-family:var(--display);font-size:clamp(1.3rem,3vw,2.2rem);color:var(--b3)">${S.phase==='channelpick'?esc(CH.name):esc(ch.name)+' kiest de zender…'}</div>`:'<p class="muted">Zender wordt gekozen…</p>'}</div></div>
+        <div class="mid"><div class="pslot on"></div><div class="focus" style="grid-column:auto">${ch?`<img class="closeup" src="${charImg(ch.char)}" alt="" style="height:min(34vh,260px);filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))"><div class="big" style="font-family:var(--display);font-size:clamp(1.3rem,3vw,2.2rem);color:var(--b3)">${S.phase==='channelpick'?esc(CH.name):esc(ch.name)+' kiest de zender…'}</div>`:'<p class="muted">Zender wordt gekozen…</p>'}</div></div>
         ${this.scoreboard()}</div>
         <div>${this.ctl('','Enter = willekeurig')}</div></div>`;
       Presenter.show(false);
