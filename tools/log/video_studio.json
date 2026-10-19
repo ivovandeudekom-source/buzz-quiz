@@ -1,0 +1,21 @@
+[
+  {
+    "created_at": "2026-10-19T08:30:33.626083Z",
+    "display_name": "Kling 3.0 Turbo",
+    "id": "2221dba3-0378-4634-a37a-6223babaff77",
+    "job_type": "kling3_0_turbo",
+    "min_result_url": null,
+    "params": {
+      "aspect_ratio": "16:9",
+      "duration": 5,
+      "height": 720,
+      "medias": [],
+      "prompt": "Empty TV game show studio, wide static shot, deep purple and magenta stage, glossy black floor with reflections, rows of moving spotlights sweeping slowly through light haze, neon magenta and gold light strips pulsing gently, no people, no text, no logos, seamless ambient loop, cinematic, 4k",
+      "resolution": "720p",
+      "width": 1280
+    },
+    "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_083033_2221dba3-0378-4634-a37a-6223babaff77.mp4",
+    "status": "completed",
+    "thumbnail_url": "https://cdn.higgsfield.ai/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_083033_2221dba3-0378-4634-a37a-6223babaff77_thumbnail.webp"
+  }
+]
