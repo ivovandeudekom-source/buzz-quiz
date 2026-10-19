@@ -1,0 +1,21 @@
+[
+  {
+    "created_at": "2026-10-19T10:20:41.83395Z",
+    "display_name": "Kling 3.0 Turbo",
+    "id": "c8ccc596-8aa8-46f7-822c-928817ed40d1",
+    "job_type": "kling3_0_turbo",
+    "min_result_url": null,
+    "params": {
+      "aspect_ratio": "16:9",
+      "duration": 5,
+      "height": 720,
+      "medias": [],
+      "prompt": "Cozy modern living room at night, warm lamps, a big flat-screen TV on the wall glowing with a purple and magenta game show light pattern (no text, no logos), a bowl of snacks on the sofa table, the camera slowly pushes forward toward the TV screen until the glowing screen fills the entire frame, cinematic, smooth dolly-in",
+      "resolution": "720p",
+      "width": 1280
+    },
+    "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_102041_c8ccc596-8aa8-46f7-822c-928817ed40d1.mp4",
+    "status": "completed",
+    "thumbnail_url": "https://cdn.higgsfield.ai/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_102041_c8ccc596-8aa8-46f7-822c-928817ed40d1_thumbnail.webp"
+  }
+]

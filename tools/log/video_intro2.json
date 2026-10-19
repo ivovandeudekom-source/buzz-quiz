@@ -1,0 +1,21 @@
+[
+  {
+    "created_at": "2026-10-19T10:20:41.667466Z",
+    "display_name": "Kling 3.0 Turbo",
+    "id": "1dc1cd4d-b850-4cac-91a8-cca499302eec",
+    "job_type": "kling3_0_turbo",
+    "min_result_url": null,
+    "params": {
+      "aspect_ratio": "16:9",
+      "duration": 5,
+      "height": 720,
+      "medias": [],
+      "prompt": "Dramatic sweeping camera flight through a TV game show studio, starting high near the lighting rig and swooping down toward an empty glossy stage with four contestant podiums, deep purple and magenta lighting, spotlights moving, light haze, cheering audience silhouettes, no text, no logos, cinematic",
+      "resolution": "720p",
+      "width": 1280
+    },
+    "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_102041_1dc1cd4d-b850-4cac-91a8-cca499302eec.mp4",
+    "status": "completed",
+    "thumbnail_url": "https://cdn.higgsfield.ai/user_3J5c1DdOiPJ3qkU5C1r6A8bzGfi/hf_20261019_102041_1dc1cd4d-b850-4cac-91a8-cca499302eec_thumbnail.webp"
+  }
+]
