@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
-/* Layout: één scherm, geen scroll. Host = podium (vraag midden, spelersbalk onder). Controller = duimbereik (knoppen onderin). */
+/* Layout: één scherm, geen scroll. Host = studio (vraag midden, kandidaten achter podia onderin). Controller = duimbereik. */
 :root{
   --bg:#120b2e; --panel:#1d1446; --panel2:#271b5c; --line:#3b2d7a;
   --fg:#f6f1ff; --muted:#a899d6; --accent:#ff3d8a;
@@ -35,13 +35,12 @@ input{font:inherit;font-weight:800;color:var(--fg);background:var(--panel2);bord
 .btn[disabled]{opacity:.4;pointer-events:none}
 .btn.on{outline:3px solid var(--b3)}
 .muted{color:var(--muted)}
-.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding-block:24px}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding-block:24px;overflow:auto}
 .stack{display:flex;flex-direction:column;gap:14px;width:min(100%,420px)}
 .logo{font-family:var(--display);font-size:clamp(2.6rem,9vw,5rem);line-height:1;color:var(--b3);text-shadow:0 .06em 0 var(--accent)}
 .logo small{display:block;font-size:.3em;color:var(--fg);text-shadow:none;letter-spacing:.3em}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
 .chip{background:var(--panel2);border-radius:999px;padding:8px 14px;font-weight:800;animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
-.chip.off{opacity:.45;text-decoration:line-through}
 .code{font-family:var(--display);font-size:clamp(3rem,14vw,7rem);letter-spacing:.12em;line-height:1;color:var(--b3)}
 .qr{background:#fff;padding:10px;border-radius:12px;display:inline-block}
 .qr img,.qr canvas{display:block}
@@ -51,34 +50,35 @@ label.opt span{flex:1}
 label.opt small{color:var(--muted)}
 .err{color:var(--bad)}
 
-/* Studio-achtergrond: video indien aanwezig, anders CSS-lichtbundels */
+/* Studio-achtergrond */
 .stage-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#3a1670 0%,var(--bg) 60%)}
 .stage-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
 .stage-bg .beam{position:absolute;left:50%;top:-20%;width:18vw;height:160%;transform-origin:50% 0;background:linear-gradient(180deg,rgba(255,61,138,.28),rgba(255,61,138,0) 70%);filter:blur(18px);mix-blend-mode:screen;animation:sweep 9s ease-in-out infinite alternate}
 .stage-bg .beam.b2{background:linear-gradient(180deg,rgba(255,212,0,.22),rgba(255,212,0,0) 70%);animation-duration:11s;animation-delay:-4s}
 .stage-bg .beam.b3{background:linear-gradient(180deg,rgba(47,123,255,.22),rgba(47,123,255,0) 70%);animation-duration:13s;animation-delay:-8s}
-.stage-bg .floor{position:absolute;left:0;right:0;bottom:0;height:28%;background:linear-gradient(0deg,rgba(255,61,138,.18),transparent)}
 @keyframes sweep{from{transform:translateX(-50%) rotate(-28deg)}to{transform:translateX(-50%) rotate(28deg)}}
 
-/* Host game screen */
-.host{flex:1;min-height:0;display:grid;grid-template-rows:auto 1fr auto;gap:14px;padding-block:14px}
+/* Host */
+.host{flex:1;min-height:0;display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding-block:12px}
 .topbar{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center}
 .topbar .rname{font-family:var(--display);font-size:1.1rem;color:var(--b3)}
+.topbar .rname small{font-family:var(--body);color:var(--muted);font-weight:800;margin-left:10px;font-size:.8rem}
 .topbar .qn{color:var(--muted);font-weight:800}
 .timer{grid-column:1/-1;height:10px;background:var(--panel);border-radius:999px;overflow:hidden}
 .timer i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--b3));width:100%;transform-origin:left;transition:transform .25s linear}
 .timer.hot i{background:linear-gradient(90deg,var(--buzz),var(--b1));animation:pulse .5s infinite alternate}
 @keyframes pulse{from{filter:brightness(1)}to{filter:brightness(1.6)}}
-.stage{display:grid;grid-template-rows:auto 1fr;gap:16px;min-height:0}
-.qcard{background:rgba(29,20,70,.92);border-radius:20px;padding:clamp(16px,3vw,32px);display:flex;flex-direction:column;gap:10px;justify-content:center;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:slideup .6s cubic-bezier(.2,1.3,.4,1)}
+.stage{display:grid;grid-template-rows:auto 1fr;gap:12px;min-height:0;animation:swoosh .6s cubic-bezier(.2,1.2,.4,1)}
+@keyframes swoosh{from{transform:scale(1.08) translateX(40px);filter:blur(6px);opacity:0}to{transform:none;filter:none;opacity:1}}
+.qcard{background:rgba(29,20,70,.92);border-radius:20px;padding:clamp(14px,2.5vw,28px);display:flex;flex-direction:column;gap:8px;justify-content:center;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:slideup .6s cubic-bezier(.2,1.3,.4,1)}
 .qcard .cat{color:var(--accent);font-weight:900;letter-spacing:.15em;text-transform:uppercase;font-size:.8rem}
-.qcard .q{font-size:clamp(1.4rem,3.6vw,2.6rem);font-weight:900;line-height:1.2}
+.qcard .q{font-size:clamp(1.3rem,3.2vw,2.3rem);font-weight:900;line-height:1.2}
 .qcard.reading .q{animation:glow 1.4s ease-in-out infinite alternate}
 @keyframes glow{from{text-shadow:0 0 0 rgba(255,212,0,0)}to{text-shadow:0 0 24px rgba(255,212,0,.5)}}
 @keyframes slideup{from{transform:translateY(60px) scale(.96);opacity:0}to{transform:none;opacity:1}}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0;perspective:1200px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0;perspective:1200px}
 @media (max-width:640px){.answers{grid-template-columns:1fr}}
-.ans{border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;font-size:clamp(1.1rem,2.4vw,1.8rem);font-weight:900;color:#0d0822;min-height:64px;transition:opacity .5s,transform .5s,filter .5s;animation:flipin .7s cubic-bezier(.2,1.2,.4,1) both}
+.ans{border-radius:18px;padding:12px 18px;display:flex;align-items:center;gap:14px;font-size:clamp(1rem,2.2vw,1.6rem);font-weight:900;color:#0d0822;min-height:52px;transition:opacity .5s,transform .5s,filter .5s;animation:flipin .7s cubic-bezier(.2,1.2,.4,1) both}
 .ans:nth-child(1){animation-delay:.05s}.ans:nth-child(2){animation-delay:.2s}.ans:nth-child(3){animation-delay:.35s}.ans:nth-child(4){animation-delay:.5s}
 @keyframes flipin{from{transform:rotateX(-90deg) translateY(20px);opacity:0}to{transform:none;opacity:1}}
 .ans .k{font-family:var(--display);font-size:1.2em;opacity:.8}
@@ -86,47 +86,76 @@ label.opt small{color:var(--muted)}
 .ans.dim{opacity:.18;transform:scale(.94) rotateX(25deg);filter:grayscale(.6);animation:none}
 .ans.hit{outline:6px solid #fff;animation:hit .9s cubic-bezier(.2,1.5,.4,1) both;box-shadow:0 0 60px rgba(255,255,255,.5)}
 @keyframes hit{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1.04)}}
-.buzzstage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(29,20,70,.9);border-radius:20px;padding:20px;text-align:center;animation:slideup .5s cubic-bezier(.2,1.3,.4,1)}
-.buzzstage .big{font-family:var(--display);font-size:clamp(1.6rem,5vw,3.4rem);color:var(--b3)}
+.ranklist{display:grid;gap:8px;align-content:center}
+.ranklist .ri{background:var(--panel2);border-radius:14px;padding:12px 18px;font-weight:900;font-size:clamp(1rem,2vw,1.5rem);display:flex;gap:14px;align-items:center;animation:flipin .6s both}
+.ranklist .ri .k{font-family:var(--display);color:var(--b3);min-width:1.4em}
+.ranklist .ri.ok{background:#1e7a45}.ranklist .ri.nope{opacity:.5}
+.buzzstage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(29,20,70,.9);border-radius:20px;padding:16px;text-align:center;animation:slideup .5s cubic-bezier(.2,1.3,.4,1);min-height:0}
+.buzzstage .big{font-family:var(--display);font-size:clamp(1.6rem,5vw,3.2rem);color:var(--b3)}
 .buzzstage .big.slam{animation:slam .6s cubic-bezier(.2,1.6,.3,1) both;color:#fff;text-shadow:0 0 40px var(--buzz)}
 @keyframes slam{0%{transform:scale(4);opacity:0}60%{transform:scale(.92);opacity:1}80%{transform:scale(1.06) rotate(-1deg)}100%{transform:scale(1)}}
-.buzzstage .ring{width:140px;height:140px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7b7b,var(--buzz) 60%,#9c0a0a);box-shadow:0 0 0 0 rgba(255,45,45,.6);animation:ring 1.2s ease-out infinite}
+.buzzstage .ring{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7b7b,var(--buzz) 60%,#9c0a0a);box-shadow:0 0 0 0 rgba(255,45,45,.6);animation:ring 1.2s ease-out infinite}
 @keyframes ring{to{box-shadow:0 0 0 40px rgba(255,45,45,0)}}
-.players{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;padding-top:14px}
-.pl{flex:1 1 120px;min-width:120px;background:rgba(29,20,70,.92);border-radius:14px;padding:10px 12px;display:grid;gap:4px;border:3px solid transparent;position:relative;font-variant-numeric:tabular-nums;transition:border-color .3s,box-shadow .3s,transform .3s}
-.pl .n{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pl .s{font-family:var(--display);font-size:1.3rem}
-.pl.answered{border-color:var(--muted)}
-.pl.buzzed{border-color:var(--buzz);box-shadow:0 0 24px rgba(255,45,45,.5);transform:translateY(-4px)}
-.pl.correct{border-color:var(--ok);box-shadow:0 0 24px rgba(46,204,113,.45)}.pl.wrong{border-color:var(--bad)}.pl.locked{opacity:.4}
-.pl.offline .n::after{content:' · offline';color:var(--bad);font-weight:600;font-size:.8em}
-.pl .d{position:absolute;top:-14px;right:8px;font-family:var(--display);font-size:1rem;padding:2px 8px;border-radius:8px;background:var(--ok);color:#06291a;animation:popup .7s cubic-bezier(.2,1.6,.4,1) both}
-.pl .d.neg{background:var(--bad);color:#fff}
+.buzzstage img.closeup{height:min(34vh,260px);animation:pop .5s cubic-bezier(.2,1.6,.4,1);filter:drop-shadow(0 10px 30px rgba(0,0,0,.6))}
+.chanpick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:center}
+.chan{border-radius:16px;padding:14px;font-family:var(--display);font-size:clamp(.9rem,1.8vw,1.3rem);text-align:center;color:#0d0822;animation:flipin .6s both}
+.chan.pick{outline:5px solid #fff;animation:hit .8s both}
+/* Podia met kandidaten */
+.podia{display:flex;gap:6px;align-items:flex-end;justify-content:center;padding-top:calc(var(--ah,120px) * .55);min-height:0}
+.pod{flex:1 1 0;max-width:150px;min-width:0;position:relative;text-align:center;transition:transform .3s}
+.pod .av{height:var(--ah,120px);display:block;margin:0 auto -8px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.6));transform-origin:bottom center;transition:transform .3s,filter .3s;position:relative;z-index:1}
+.pod .desk{background:linear-gradient(180deg,#5a2fb5,#2a1760);border-radius:10px 10px 4px 4px;border-top:4px solid var(--accent);padding:6px 6px 8px;position:relative;z-index:2;box-shadow:0 10px 20px rgba(0,0,0,.4)}
+.pod .n{font-weight:900;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pod .s{font-family:var(--display);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.pod.answered .desk{border-top-color:var(--muted)}
+.pod.answered .av{animation:nod .5s}
+@keyframes nod{30%{transform:translateY(-10px)}}
+.pod.buzzed .av{transform:scale(1.15);filter:drop-shadow(0 0 24px var(--buzz))}
+.pod.buzzed .desk{border-top-color:var(--buzz);box-shadow:0 0 30px rgba(255,45,45,.5)}
+.pod.correct .av{animation:jump .9s cubic-bezier(.2,1.4,.4,1)}
+@keyframes jump{0%{transform:none}30%{transform:translateY(-34px) scale(1.08)}60%{transform:translateY(0) scale(.96)}80%{transform:translateY(-10px)}100%{transform:none}}
+.pod.correct .desk{border-top-color:var(--ok);box-shadow:0 0 24px rgba(46,204,113,.45)}
+.pod.wrong .av{transform:rotate(-8deg) translateY(6px);filter:grayscale(.7) brightness(.7)}
+.pod.wrong .desk{border-top-color:var(--bad)}
+.pod.none .av{filter:brightness(.6)}
+.pod.offline{opacity:.4}
+.pod.holder .av{animation:shiver .25s infinite}
+@keyframes shiver{0%{transform:translateX(-2px) rotate(-1deg)}100%{transform:translateX(2px) rotate(1deg)}}
+.pod .bomb{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:2rem;z-index:3;animation:bob .6s infinite alternate}
+@keyframes bob{from{transform:translateX(-50%) translateY(0)}to{transform:translateX(-50%) translateY(-8px)}}
+.pod .bet{position:absolute;right:4px;top:-10px;z-index:3;background:var(--b3);color:#0d0822;font-family:var(--display);font-size:.8rem;padding:2px 8px;border-radius:8px;animation:popup .5s both}
+.pod .d{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-family:var(--display);font-size:1rem;padding:2px 8px;border-radius:8px;background:var(--ok);color:#06291a;animation:popup .7s cubic-bezier(.2,1.6,.4,1) both;z-index:3}
+.pod .d.neg{background:var(--bad);color:#fff}
+.pod .splat{position:absolute;left:50%;top:10%;width:70%;aspect-ratio:1;transform:translateX(-50%);z-index:4;pointer-events:none;background:radial-gradient(circle,#fff8e1 0 28%,#f3d58a 29% 40%,transparent 41%),radial-gradient(circle at 30% 30%,#fff 0 12%,transparent 13%),radial-gradient(circle at 70% 60%,#fff 0 14%,transparent 15%),radial-gradient(circle at 50% 80%,#fff 0 10%,transparent 11%);animation:splat .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes splat{from{transform:translateX(-50%) scale(0) rotate(-40deg)}to{transform:translateX(-50%) scale(1)}}
+.pie-fly{position:fixed;z-index:9;font-size:3rem;pointer-events:none;transition:transform .7s cubic-bezier(.3,.1,.3,1),opacity .2s .6s;transform:translate(0,0)}
 @keyframes popup{from{transform:translateY(16px) scale(.4);opacity:0}to{transform:none;opacity:1}}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .hostctl{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .hostctl .hint{color:var(--muted);font-size:.9rem}
-.overlay{position:fixed;inset:0;background:rgba(18,11,46,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;z-index:5;animation:fade .5s both}
+.overlay{position:fixed;inset:0;background:rgba(18,11,46,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:24px;z-index:5;animation:fade .5s both}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .overlay h1{font-size:clamp(2rem,7vw,4.5rem);color:var(--b3)}
 .overlay h1.title{animation:titlein 1s cubic-bezier(.2,1.4,.3,1) both;text-shadow:0 .05em 0 var(--accent),0 0 40px rgba(255,212,0,.4)}
 @keyframes titlein{0%{transform:scale(.2) rotate(-6deg);opacity:0;letter-spacing:.6em}70%{transform:scale(1.08);opacity:1;letter-spacing:.02em}100%{transform:scale(1)}}
-.overlay p{max-width:36ch;font-size:1.2rem;margin:0;animation:fade .8s .6s both}
+.overlay p{max-width:40ch;font-size:1.15rem;margin:0;animation:fade .8s .6s both}
 .count{font-family:var(--display);font-size:clamp(4rem,16vw,10rem);color:#fff;line-height:1;animation:countin .9s ease-out both}
 @keyframes countin{0%{transform:scale(2.4);opacity:0}30%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:.2}}
 .board{display:grid;gap:8px;width:min(100%,520px);position:relative}
-.board .r{display:grid;grid-template-columns:2.2rem 1fr auto;gap:12px;align-items:center;background:var(--panel);padding:12px 16px;border-radius:12px;font-size:1.2rem;font-weight:900;font-variant-numeric:tabular-nums;text-align:left;transition:transform .9s cubic-bezier(.2,1.1,.3,1),background .5s}
+.board .r{display:grid;grid-template-columns:2.2rem 44px 1fr auto;gap:12px;align-items:center;background:var(--panel);padding:8px 16px;border-radius:12px;font-size:1.15rem;font-weight:900;font-variant-numeric:tabular-nums;text-align:left;transition:transform .9s cubic-bezier(.2,1.1,.3,1),background .5s}
+.board .r img{height:44px;width:44px;object-fit:contain;object-position:top}
 .board .r.top{background:var(--accent)}
 .board .r.up .sc{color:var(--ok)}.board .r.down .sc{color:var(--bad)}
 .board .r .pos{font-family:var(--display)}
 .board .r .sc{font-family:var(--display)}
-.podium{display:flex;align-items:flex-end;gap:12px;justify-content:center;height:240px}
-.podium div{width:120px;background:var(--panel2);border-radius:12px 12px 0 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:10px;gap:6px;font-weight:900;transform-origin:bottom;transform:scaleY(0);opacity:0;transition:transform .9s cubic-bezier(.2,1.3,.4,1),opacity .3s}
+.podium{display:flex;align-items:flex-end;gap:12px;justify-content:center;height:300px}
+.podium div{width:130px;background:var(--panel2);border-radius:12px 12px 0 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:10px;gap:4px;font-weight:900;transform-origin:bottom;transform:scaleY(0);opacity:0;transition:transform .9s cubic-bezier(.2,1.3,.4,1),opacity .3s;position:relative}
+.podium div img{height:120px;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);filter:drop-shadow(0 8px 14px rgba(0,0,0,.6))}
 .podium div.show{opacity:1;transform:none}
-.podium .p1{height:220px;background:var(--b3);color:#0d0822}.podium .p2{height:170px}.podium .p3{height:130px}
-.podium b{font-family:var(--display);font-size:1.6rem}
-@keyframes rise{from{transform:scaleY(0);opacity:0}to{transform:none;opacity:1}}
+.podium .p1{height:150px;background:var(--b3);color:#0d0822}.podium .p2{height:110px}.podium .p3{height:80px}
+.podium b{font-family:var(--display);font-size:1.5rem}
 .flash{position:fixed;inset:0;z-index:6;pointer-events:none;background:var(--buzz);animation:flashout .7s ease-out both}
+.flash.white{background:#fff}
 @keyframes flashout{from{opacity:.85}to{opacity:0}}
 .shake{animation:shake .5s}
 @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
@@ -134,19 +163,23 @@ label.opt small{color:var(--muted)}
 .vidover video{width:100%;height:100%;object-fit:cover}
 #confetti{position:fixed;inset:0;z-index:8;pointer-events:none}
 .winner{font-size:clamp(2.4rem,9vw,6rem)!important;animation:titlein 1.2s cubic-bezier(.2,1.4,.3,1) both}
+.lobbyav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:flex-end}
+.lobbyav div{text-align:center;font-size:.8rem;font-weight:900;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.lobbyav img{height:110px;display:block;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
 
 /* Controller */
 .ctl{flex:1;min-height:0;display:grid;grid-template-rows:auto 1fr;gap:12px;padding-block:12px}
-.ctl .hdr{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-radius:12px;padding:10px 14px}
+.ctl .hdr{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-radius:12px;padding:8px 14px;gap:10px}
+.ctl .hdr img{height:44px}
 .ctl .hdr b{font-family:var(--display);font-size:1.2rem;font-variant-numeric:tabular-nums}
 .ctl .hdr .st{font-size:.75rem;color:var(--muted)}
 .ctl .hdr .st.on{color:var(--ok)}
-.ctl .body{display:flex;flex-direction:column;gap:12px;min-height:0}
+.ctl .body{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto}
 .ctl .msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:10px;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
 .ctl .msg h2{font-size:clamp(1.5rem,7vw,2.4rem)}
 .ctl .msg .delta{font-family:var(--display);font-size:3rem;color:var(--ok);animation:popup .6s cubic-bezier(.2,1.6,.4,1) both}
 .ctl .msg .delta.neg{color:var(--bad)}
-.ctl .qtext{background:var(--panel);border-radius:14px;padding:14px;text-align:center;font-weight:900;font-size:1.05rem;animation:slideup .4s cubic-bezier(.2,1.3,.4,1)}
+.ctl .qtext{background:var(--panel);border-radius:14px;padding:12px;text-align:center;font-weight:900;font-size:1.05rem;animation:slideup .4s cubic-bezier(.2,1.3,.4,1)}
 .pad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;flex:1;min-height:0}
 .pad button{border-radius:20px;font-size:1.05rem;font-weight:900;color:#0d0822;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:inset 0 -8px 0 rgba(0,0,0,.18);transition:transform .08s;animation:flipin .5s cubic-bezier(.2,1.2,.4,1) both}
 .pad button:nth-child(2){animation-delay:.08s}.pad button:nth-child(3){animation-delay:.16s}.pad button:nth-child(4){animation-delay:.24s}
@@ -160,6 +193,22 @@ label.opt small{color:var(--muted)}
 .buzzer button[disabled]{filter:grayscale(.8);opacity:.5}
 .ctimer{height:8px;background:var(--panel);border-radius:999px;overflow:hidden}
 .ctimer i{display:block;height:100%;background:var(--accent);transform-origin:left}
+.chargrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.chargrid button{background:var(--panel2);border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.75rem;font-weight:900;animation:pop .4s both}
+.chargrid button img{height:84px}
+.chargrid button[disabled]{opacity:.3;filter:grayscale(1)}
+.chargrid button.me{outline:3px solid var(--b3)}
+.list{display:grid;gap:10px}
+.list button{background:var(--panel2);border-radius:14px;padding:14px;font-weight:900;display:flex;align-items:center;gap:12px;text-align:left;animation:flipin .5s both}
+.list button img{height:44px}
+.list button.sel{outline:3px solid var(--b3);background:#3a2585}
+.list button .k{font-family:var(--display);color:var(--b3);min-width:1.4em;font-size:1.2rem}
+.list button[disabled]{opacity:.4}
+.bets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.bets button{background:var(--b3);color:#0d0822;border-radius:16px;padding:22px 8px;font-family:var(--display);font-size:1.4rem;box-shadow:inset 0 -8px 0 rgba(0,0,0,.18)}
+.bets button.sel{outline:4px solid #fff}
+.chanbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1}
+.chanbtns button{border-radius:16px;font-family:var(--display);color:#0d0822;padding:14px;font-size:1rem;animation:flipin .5s both}
 body.ok-flash{animation:okflash .6s}
 body.bad-flash{animation:badflash .6s}
 @keyframes okflash{0%{background:#1e7a45}100%{background:var(--bg)}}
@@ -267,19 +316,300 @@ const QUESTIONS = [
 {v:"6d26faf590",cat:"Algemeen",d:1,q:"Hoeveel zijden heeft een hexagon?",a:["5","6","7","8"],c:1},
 {v:"3bf38eafa2",cat:"Algemeen",d:3,q:"Welk bedrijf maakt de PlayStation?",a:["Nintendo","Microsoft","Sony","Sega"],c:2},
 {v:"d5dcfa77a7",cat:"Algemeen",d:2,q:"Hoeveel minuten duurt een normale voetbalwedstrijd zonder blessuretijd?",a:["80","90","100","120"],c:1},
+// Vragenbank v2 — uitbreiding per zender. c = index juiste optie. d = moeilijkheid 1-3.
+// Film & TV
+{v:"26aa3a05e5",cat:"Film & TV",d:1,q:"Hoe heet de blauwe geest uit de lamp in 'Aladdin'?",a:["Jafar","Genie","Abu","Iago"],c:1},
+{v:"5044054037",cat:"Film & TV",d:1,q:"Welke sneeuwpop praat in 'Frozen'?",a:["Sven","Olaf","Kristoff","Hans"],c:1},
+{v:"f554930248",cat:"Film & TV",d:2,q:"Wie speelde Jack Sparrow in 'Pirates of the Caribbean'?",a:["Orlando Bloom","Johnny Depp","Geoffrey Rush","Keith Richards"],c:1},
+{v:"503fb5e7b7",cat:"Film & TV",d:1,q:"In welke film zegt een robot 'I'll be back'?",a:["RoboCop","The Terminator","Blade Runner","Total Recall"],c:1},
+{v:"616155947b",cat:"Film & TV",d:2,q:"Hoe heet de school van Zweinstein in het Engels?",a:["Hogwarts","Hogsmeade","Howards","Hagrids"],c:0},
+{v:"97fb8ffde5",cat:"Film & TV",d:2,q:"Welke Nederlandse serie draait om de familie Alberts in Meerdijk?",a:["Westenwind","Goede Tijden, Slechte Tijden","Onderweg naar Morgen","Spangas"],c:1},
+{v:"c59e560d40",cat:"Film & TV",d:1,q:"Hoe heet de hond van Tintin (Kuifje)?",a:["Bobbie","Idefix","Pluto","Snoopy"],c:0},
+{v:"05de9c6b37",cat:"Film & TV",d:2,q:"Welke acteur speelde Forrest Gump?",a:["Tom Cruise","Tom Hanks","Kevin Costner","Robin Williams"],c:1},
+{v:"a09df7703b",cat:"Film & TV",d:3,q:"Welke film won de Oscar voor Beste Film in 2020 (uitreiking)?",a:["1917","Joker","Parasite","Once Upon a Time in Hollywood"],c:2},
+{v:"8282dcf4e2",cat:"Film & TV",d:1,q:"Hoe heet de vriendin van Mickey Mouse?",a:["Daisy","Minnie","Katrien","Molly"],c:1},
+{v:"08e13a2b12",cat:"Film & TV",d:2,q:"In welke serie speelt Bryan Cranston een scheikundeleraar die drugs maakt?",a:["Better Call Saul","Breaking Bad","Ozark","Narcos"],c:1},
+{v:"1037b2edc6",cat:"Film & TV",d:2,q:"Wie presenteerde jarenlang 'Wie is de Mol?' voordat Rik van de Westelaken het overnam?",a:["Art Rooijakkers","Pieter Jan Hagens","Angela Groothuizen","Karel van de Graaf"],c:0},
+{v:"8a7ac6595c",cat:"Film & TV",d:1,q:"Hoe heet de groene ogre uit de gelijknamige film?",a:["Shrek","Hulk","Grinch","Yoda"],c:0},
+{v:"6a391e8074",cat:"Film & TV",d:2,q:"Van welke schrijver is het boek 'Oorlogswinter'?",a:["Thea Beckman","Jan Terlouw","Annie M.G. Schmidt","Paul Biegel"],c:1},
+{v:"393d37424e",cat:"Film & TV",d:1,q:"Welk dier is Simba in 'The Lion King'?",a:["Tijger","Leeuw","Luipaard","Panter"],c:1},
+{v:"4273385b91",cat:"Film & TV",d:3,q:"Wie regisseerde 'Pulp Fiction'?",a:["Martin Scorsese","Quentin Tarantino","Guy Ritchie","David Fincher"],c:1},
+{v:"1e3b8b29eb",cat:"Film & TV",d:2,q:"In welke film speelt Keanu Reeves 'Neo'?",a:["Speed","The Matrix","John Wick","Point Break"],c:1},
+{v:"28eb01e30a",cat:"Film & TV",d:1,q:"Hoe heet de beste vriend van SpongeBob?",a:["Octo","Patrick","Meneer Krabs","Plankton"],c:1},
+{v:"68fe8422f6",cat:"Film & TV",d:2,q:"In welk Brabants dorp speelt 'New Kids' zich af?",a:["Maaskantje","Schijndel","Boxtel","Veghel"],c:0},
+{v:"42367fd124",cat:"Film & TV",d:2,q:"Hoeveel 'Toy Story'-films zijn er tot en met 2019 uitgebracht?",a:["2","3","4","5"],c:2},
+{v:"7865bd34c5",cat:"Film & TV",d:3,q:"Welke actrice speelde Hermelien Griffel?",a:["Emma Stone","Emma Watson","Emma Thompson","Emma Roberts"],c:1},
+{v:"628b88c869",cat:"Film & TV",d:1,q:"Op welk land is het koninkrijk Arendelle uit 'Frozen' geïnspireerd?",a:["Zweden","Noorwegen","IJsland","Finland"],c:1},
+{v:"170d6d7c88",cat:"Film & TV",d:2,q:"Welke serie speelt zich af in het advocatenkantoor Pearson Hardman?",a:["Suits","The Good Wife","Boston Legal","Ally McBeal"],c:0},
+{v:"0477fb9926",cat:"Film & TV",d:2,q:"Hoe heet de Amsterdamse rechercheur in de serie 'Baantjer'?",a:["Grijpstra","De Cock","Vledder","Swiebertje"],c:1},
+{v:"b94134ef89",cat:"Film & TV",d:1,q:"Welke kleur heeft de pil die Neo slikt in 'The Matrix'?",a:["Blauw","Rood","Groen","Geel"],c:1},
+{v:"eb14254946",cat:"Film & TV",d:2,q:"Wie speelt Tony Stark / Iron Man?",a:["Chris Evans","Robert Downey Jr.","Chris Hemsworth","Mark Ruffalo"],c:1},
+{v:"2144e29a0d",cat:"Film & TV",d:3,q:"In welk jaar kwam de eerste 'Star Wars'-film uit?",a:["1975","1977","1979","1981"],c:1},
+{v:"a2d6a5a49b",cat:"Film & TV",d:1,q:"Van welke omroep is het programma 'Ik Vertrek'?",a:["AVROTROS","BNNVARA","KRO-NCRV","MAX"],c:0},
+{v:"c37074a0aa",cat:"Film & TV",d:2,q:"Welke film gaat over een jongen die alleen thuis achterblijft met Kerst?",a:["Elf","Home Alone","Jingle All the Way","The Santa Clause"],c:1},
+{v:"79a9651ec0",cat:"Film & TV",d:2,q:"Hoe heet de boot in 'Jaws'?",a:["Orca","Nautilus","Titanic","Pequod"],c:0},
+{v:"2cb1100d91",cat:"Film & TV",d:1,q:"Wie is de aartsvijand van Batman met een witte huid en groen haar?",a:["Penguin","Joker","Riddler","Bane"],c:1},
+{v:"59d1b32548",cat:"Film & TV",d:2,q:"In welke serie zit de familie Stark?",a:["Vikings","Game of Thrones","The Last Kingdom","Outlander"],c:1},
+{v:"2b47fc3dda",cat:"Film & TV",d:2,q:"Welk Nederlands programma zoekt de beste amateurbakker?",a:["MasterChef","Heel Holland Bakt","Bake Off","Hollands Beste Bakker"],c:1},
+{v:"239b419f35",cat:"Film & TV",d:3,q:"Wie speelde de hoofdrol in 'Gladiator' (2000)?",a:["Russell Crowe","Brad Pitt","Joaquin Phoenix","Mel Gibson"],c:0},
+{v:"4c577a4bf4",cat:"Film & TV",d:1,q:"Hoe heet de tovenaar die Frodo helpt in 'The Lord of the Rings'?",a:["Saruman","Gandalf","Dumbledore","Merlijn"],c:1},
+{v:"803fa781e7",cat:"Film & TV",d:2,q:"Welke zanger speelde de hoofdrol in de film 'Bohemian Rhapsody'?",a:["Rami Malek","Taron Egerton","Austin Butler","Eddie Redmayne"],c:0},
+{v:"503e750aba",cat:"Film & TV",d:2,q:"Welk NTR-programma legt sinds 1988 met sketches dingen uit aan kinderen?",a:["Het Klokhuis","Zapp","Willem Wever","Klokhuis Live"],c:0},
+{v:"59515032f5",cat:"Film & TV",d:1,q:"Welke Disneyprinses heeft heel lang haar?",a:["Assepoester","Rapunzel","Belle","Ariël"],c:1},
+{v:"21d0788924",cat:"Film & TV",d:2,q:"In welke stad speelt 'Breaking Bad' zich af?",a:["Phoenix","Albuquerque","El Paso","Las Vegas"],c:1},
+{v:"b6ebbabc7a",cat:"Film & TV",d:3,q:"Welke Nederlandse regisseur maakte 'Zwartboek' en 'Elle'?",a:["Paul Verhoeven","Alex van Warmerdam","Martin Koolhoven","Johan Nijenhuis"],c:0},
+{v:"0011867779",cat:"Film & TV",d:1,q:"Hoe heet de film over een clownvis die zijn zoon zoekt?",a:["Finding Nemo","Shark Tale","Moana","The Little Mermaid"],c:0},
+{v:"73dbe5f803",cat:"Film & TV",d:2,q:"Welke streamingdienst maakte 'Stranger Things'?",a:["Disney+","Netflix","HBO","Amazon Prime"],c:1},
+// Muziek
+{v:"53080644c1",cat:"Muziek",d:1,q:"Welke Nederlandse zanger zingt 'Het is een nacht'?",a:["Marco Borsato","Guus Meeuwis","Frans Bauer","Jan Smit"],c:1},
+{v:"a35ab7b92f",cat:"Muziek",d:1,q:"Wie zong 'Shape of You'?",a:["Ed Sheeran","Justin Bieber","Harry Styles","Sam Smith"],c:0},
+{v:"c6f4097ec1",cat:"Muziek",d:2,q:"Welke band komt uit Zweden en zong 'Dancing Queen'?",a:["Roxette","ABBA","Ace of Base","Europe"],c:1},
+{v:"da745f4d95",cat:"Muziek",d:2,q:"Hoeveel toetsen heeft een standaard piano?",a:["76","88","92","100"],c:1},
+{v:"780b6763fd",cat:"Muziek",d:1,q:"Wie is de 'Queen of Pop' die 'Like a Virgin' zong?",a:["Cher","Madonna","Whitney Houston","Kylie Minogue"],c:1},
+{v:"828652deb8",cat:"Muziek",d:2,q:"Welke Nederlandse dj won meerdere keren de titel 'beste dj ter wereld' van DJ Mag?",a:["Tiësto","Armin van Buuren","Afrojack","Oliver Heldens"],c:1},
+{v:"77035a8593",cat:"Muziek",d:2,q:"Welke rapper heet eigenlijk Marshall Mathers?",a:["Jay-Z","Eminem","Dr. Dre","50 Cent"],c:1},
+{v:"a199239f7a",cat:"Muziek",d:1,q:"Welk instrument heeft zwarte en witte toetsen?",a:["Gitaar","Piano","Viool","Trompet"],c:1},
+{v:"141498150c",cat:"Muziek",d:3,q:"Welke componist was doof aan het einde van zijn leven?",a:["Mozart","Beethoven","Bach","Haydn"],c:1},
+{v:"112282da31",cat:"Muziek",d:2,q:"Wie zong 'Rolling in the Deep'?",a:["Adele","Beyoncé","Amy Winehouse","Duffy"],c:0},
+{v:"4346383702",cat:"Muziek",d:1,q:"Wie zong 'Zij gelooft in mij'?",a:["André Hazes","Willeke Alberti","Gerard Joling","René Froger"],c:0},
+{v:"b17421dc13",cat:"Muziek",d:2,q:"Uit welk land komt de band Coldplay?",a:["Verenigde Staten","Engeland","Ierland","Australië"],c:1},
+{v:"482d189526",cat:"Muziek",d:2,q:"Welke zangeres heeft de albums '1989' en 'Folklore'?",a:["Katy Perry","Taylor Swift","Ariana Grande","Lady Gaga"],c:1},
+{v:"ed6ab957c3",cat:"Muziek",d:3,q:"Welke Nederlandse band had een hit met 'Venus' in 1969?",a:["Golden Earring","Shocking Blue","The Cats","Earth & Fire"],c:1},
+{v:"84c46e9c37",cat:"Muziek",d:1,q:"Welke Nederlandse band zingt 'Amsterdam' en 'In Your Arms'?",a:["Kensington","Chef'Special","De Staat","Di-rect"],c:1},
+{v:"fb82e67525",cat:"Muziek",d:2,q:"Wie zong 'Billie Jean'?",a:["Prince","Michael Jackson","Stevie Wonder","James Brown"],c:1},
+{v:"0750bcf25c",cat:"Muziek",d:2,q:"Welke rapper zong samen met Lil' Kleine 'Drank & Drugs'?",a:["Boef","Ronnie Flex","Josylvio","Sevn Alias"],c:1},
+{v:"a1f290d85f",cat:"Muziek",d:1,q:"Hoeveel leden had de Britse boyband One Direction oorspronkelijk?",a:["4","5","6","3"],c:1},
+{v:"3814757931",cat:"Muziek",d:3,q:"In welke stad werd Mozart geboren?",a:["Wenen","Salzburg","Praag","München"],c:1},
+{v:"25ac049e75",cat:"Muziek",d:2,q:"Wie zong 'Hello' en 'Someone Like You'?",a:["Adele","Sia","Rihanna","Dua Lipa"],c:0},
+{v:"04d4b0a2d0",cat:"Muziek",d:2,q:"Welke Nederlandse groep won in 1975 het Songfestival met 'Ding-a-dong'?",a:["Teach-In","Mouth & MacNeal","Sandra & Andres","Luv'"],c:0},
+{v:"0b7cd7af13",cat:"Muziek",d:1,q:"Welke zanger staat bekend om 'Purple Rain'?",a:["Prince","David Bowie","Elton John","George Michael"],c:0},
+{v:"2c37dedc22",cat:"Muziek",d:2,q:"Wie zong 'Dromen zijn bedrog'?",a:["Marco Borsato","Guus Meeuwis","Gordon","Jeroen van der Boom"],c:0},
+{v:"c8fc2c07a9",cat:"Muziek",d:2,q:"Uit welk land komt K-pop?",a:["Japan","Zuid-Korea","China","Thailand"],c:1},
+{v:"1f1a2266cc",cat:"Muziek",d:3,q:"Welke jazztrompettist nam 'Kind of Blue' op?",a:["Louis Armstrong","Miles Davis","Chet Baker","Dizzy Gillespie"],c:1},
+{v:"263537584f",cat:"Muziek",d:1,q:"Welk nummer van Queen eindigt met 'nothing really matters'?",a:["We Are the Champions","Bohemian Rhapsody","Don't Stop Me Now","Somebody to Love"],c:1},
+{v:"518177050e",cat:"Muziek",d:2,q:"Welke Nederlandse zangeres zong 'Nobody's Wife'?",a:["Anouk","Ilse DeLange","Davina Michelle","S10"],c:0},
+{v:"4187bbad6f",cat:"Muziek",d:2,q:"Hoe heet het jaarlijkse dancefestival in Amsterdam in oktober?",a:["Mysteryland","Amsterdam Dance Event","Awakenings","Lowlands"],c:1},
+{v:"d714f47d93",cat:"Muziek",d:1,q:"Wie zong 'Thinking Out Loud'?",a:["Ed Sheeran","John Legend","Bruno Mars","James Blunt"],c:0},
+{v:"69b9fa0f88",cat:"Muziek",d:2,q:"Welke Nederlandse band zingt 'Iedereen is van de wereld'?",a:["The Scene","Doe Maar","Bløf","Acda en De Munnik"],c:0},
+{v:"529ac5534e",cat:"Muziek",d:3,q:"Welke Britse band bracht 'Wonderwall' uit?",a:["Blur","Oasis","Pulp","Radiohead"],c:1},
+{v:"48e1e2757c",cat:"Muziek",d:1,q:"Welk Nederlandse festival vindt plaats in Biddinghuizen?",a:["Pinkpop","Lowlands","Zwarte Cross","Paaspop"],c:1},
+{v:"f000827cad",cat:"Muziek",d:2,q:"Wie zong 'Blinding Lights'?",a:["The Weeknd","Drake","Post Malone","Bruno Mars"],c:0},
+{v:"5365cde773",cat:"Muziek",d:2,q:"Welke zangeres is bekend van 'Bad Guy'?",a:["Olivia Rodrigo","Billie Eilish","Lorde","Halsey"],c:1},
+{v:"01bac2115e",cat:"Muziek",d:3,q:"Wat betekent 'allegro' in de muziek?",a:["Langzaam","Snel","Zacht","Hard"],c:1},
+{v:"4000c65c55",cat:"Muziek",d:1,q:"Hoe heet de zanger van U2?",a:["Bono","Sting","The Edge","Morrissey"],c:0},
+{v:"a85f8e6910",cat:"Muziek",d:2,q:"Welke Nederlandse zanger zong 'Rood'?",a:["Marco Borsato","Guus Meeuwis","Nick & Simon","Jan Smit"],c:0},
+{v:"58be76f9cf",cat:"Muziek",d:2,q:"Wie won het Eurovisie Songfestival in 2024?",a:["Nemo (Zwitserland)","Loreen (Zweden)","Joost Klein (Nederland)","Käärijä (Finland)"],c:0},
+{v:"18be93884a",cat:"Muziek",d:1,q:"Welk instrument bespeelt een drummer?",a:["Drumstel","Basgitaar","Keyboard","Saxofoon"],c:0},
+{v:"df6733cb73",cat:"Muziek",d:2,q:"Welke Nederlandse rapper bracht 'Europapa' naar het Songfestival?",a:["Joost Klein","Snelle","Kraantje Pappie","Donnie"],c:0},
+// Sport
+{v:"83c4ea4569",cat:"Sport",d:1,q:"Hoeveel spelers staan er per team op het veld bij basketbal?",a:["5","6","7","11"],c:0},
+{v:"7a08b241d8",cat:"Sport",d:1,q:"Welke kleur trui draagt de leider in de Tour de France?",a:["Groen","Geel","Wit","Bolletjes"],c:1},
+{v:"b4e39e4378",cat:"Sport",d:2,q:"In welke stad staat de Johan Cruijff ArenA?",a:["Rotterdam","Amsterdam","Eindhoven","Utrecht"],c:1},
+{v:"e13fed93a9",cat:"Sport",d:2,q:"Welke Nederlandse voetballer scoorde de 'vliegende kopbal' op het WK 2014 tegen Spanje?",a:["Arjen Robben","Robin van Persie","Wesley Sneijder","Dirk Kuyt"],c:1},
+{v:"20479be867",cat:"Sport",d:1,q:"Hoeveel holes heeft een standaard golfbaan?",a:["9","12","18","24"],c:2},
+{v:"4c38c93fd6",cat:"Sport",d:3,q:"Welke Nederlandse wielrenner won de Tour de France in 1980?",a:["Joop Zoetemelk","Jan Janssen","Hennie Kuiper","Peter Winnen"],c:0},
+{v:"f8a39c9e40",cat:"Sport",d:2,q:"Welke Nederlandse schaatsster won olympisch goud op de 1500 meter in 2018 en 2022?",a:["Ireen Wüst","Jutta Leerdam","Antoinette de Jong","Sven Kramer"],c:0},
+{v:"548abda497",cat:"Sport",d:1,q:"Hoeveel sets moet een man winnen om een wedstrijd op Wimbledon te winnen?",a:["2","3","4","5"],c:1},
+{v:"242b10cc70",cat:"Sport",d:2,q:"Welke club won de Eredivisie het vaakst?",a:["PSV","Feyenoord","Ajax","AZ"],c:2},
+{v:"6b9ff946b9",cat:"Sport",d:2,q:"In welke sport is Max Verstappen wereldkampioen?",a:["MotoGP","Formule 1","Rally","IndyCar"],c:1},
+{v:"8a0beacb01",cat:"Sport",d:1,q:"Hoeveel punten is een vrije worp waard in basketbal?",a:["1","2","3","4"],c:0},
+{v:"2741839127",cat:"Sport",d:3,q:"Welk land won het eerste WK voetbal in 1930?",a:["Brazilië","Uruguay","Argentinië","Italië"],c:1},
+{v:"479c575055",cat:"Sport",d:2,q:"Hoe heet het Nederlandse vrouwenvoetbalelftal in de volksmond?",a:["De Oranje Leeuwinnen","De Oranje Tijgers","De Oranje Dames","De Leeuwinnen van Oranje"],c:0},
+{v:"5d9b3ef87e",cat:"Sport",d:2,q:"Welke Nederlandse turnster won olympisch goud op de balk in 2016?",a:["Sanne Wevers","Lieke Wevers","Eythora Thorsdottir","Naomi Visser"],c:0},
+{v:"1c8c09d972",cat:"Sport",d:1,q:"Met hoeveel spelers speel je volleybal per team op het veld?",a:["4","5","6","7"],c:2},
+{v:"977c6ba328",cat:"Sport",d:2,q:"Hoe lang duurt een ijshockeywedstrijd aan reguliere speeltijd?",a:["2 × 30 minuten","3 × 20 minuten","4 × 15 minuten","2 × 45 minuten"],c:1},
+{v:"dfa299b367",cat:"Sport",d:3,q:"Welke Nederlandse judoka won olympisch goud in 1964 in Tokio?",a:["Anton Geesink","Wim Ruska","Mark Huizinga","Dennis van der Geest"],c:0},
+{v:"bbe96269a3",cat:"Sport",d:2,q:"In welk land worden de Olympische Zomerspelen van 2028 gehouden?",a:["Frankrijk","Verenigde Staten","Australië","Japan"],c:1},
+{v:"1414f8fff0",cat:"Sport",d:1,q:"Welke sport beoefent Sifan Hassan?",a:["Zwemmen","Atletiek","Wielrennen","Hockey"],c:1},
+{v:"0d5c0e1333",cat:"Sport",d:2,q:"Welke voetballer heeft de bijnaam 'CR7'?",a:["Lionel Messi","Cristiano Ronaldo","Neymar","Kylian Mbappé"],c:1},
+{v:"9f586bedb2",cat:"Sport",d:2,q:"Hoeveel grandslamtoernooien zijn er per jaar in het tennis?",a:["3","4","5","6"],c:1},
+{v:"232400f310",cat:"Sport",d:1,q:"Welke kleur heeft de bal bij snooker die het meeste waard is?",a:["Rood","Zwart","Roze","Blauw"],c:1},
+{v:"6afe8ea278",cat:"Sport",d:3,q:"Welke Nederlandse zwemmer won olympisch goud op de 100 meter vrije slag in 2004?",a:["Pieter van den Hoogenband","Inge de Bruijn","Ranomi Kromowidjojo","Maarten van der Weijden"],c:0},
+{v:"848d2201c1",cat:"Sport",d:2,q:"Hoe heet het stadion van Feyenoord?",a:["De Kuip","Het Kasteel","Philips Stadion","Galgenwaard"],c:0},
+{v:"5b5af59b8d",cat:"Sport",d:2,q:"Wie won het PDC WK darts van 2024 (finale januari 2024)?",a:["Michael van Gerwen","Luke Humphries","Luke Littler","Raymond van Barneveld"],c:1},
+{v:"0bbdd7d2f0",cat:"Sport",d:1,q:"Hoeveel spelers heeft een hockeyteam op het veld?",a:["9","10","11","12"],c:2},
+{v:"1ab8bf0ce6",cat:"Sport",d:2,q:"In welke sport gebruik je een 'epee'?",a:["Boogschieten","Schermen","Polo","Curling"],c:1},
+{v:"280e60e6ee",cat:"Sport",d:2,q:"Wie won in 2024 de olympische wegrit bij de mannen?",a:["Mathieu van der Poel","Remco Evenepoel","Wout van Aert","Tadej Pogačar"],c:1},
+{v:"20347ce849",cat:"Sport",d:1,q:"Hoeveel minuten duurt een helft bij voetbal?",a:["30","40","45","60"],c:2},
+{v:"06a509867b",cat:"Sport",d:3,q:"Welke kleur hebben de olympische ringen naast blauw, geel, zwart en groen?",a:["Paars","Rood","Oranje","Wit"],c:1},
+{v:"f59071d140",cat:"Sport",d:2,q:"In welk jaar wonnen de Nederlandse hockeyvrouwen géén olympisch goud?",a:["2008","2016","2020","2024"],c:1},
+{v:"571f1368ad",cat:"Sport",d:2,q:"Welke bokser noemde zichzelf 'The Greatest'?",a:["Mike Tyson","Muhammad Ali","Joe Frazier","George Foreman"],c:1},
+{v:"7176cc9d74",cat:"Sport",d:1,q:"In welke sport is een 'birdie' een goede score?",a:["Badminton","Golf","Tennis","Darts"],c:1},
+{v:"52722a5659",cat:"Sport",d:2,q:"Hoeveel kilometer is de Elfstedentocht ongeveer?",a:["100","150","200","250"],c:2},
+{v:"402a747a44",cat:"Sport",d:2,q:"Welke club speelt in het Philips Stadion?",a:["PSV","FC Eindhoven","Willem II","NAC"],c:0},
+{v:"ed31769054",cat:"Sport",d:3,q:"Wie was in 1988 de topscorer van het EK voetbal?",a:["Ruud Gullit","Marco van Basten","Ronald Koeman","Frank Rijkaard"],c:1},
+{v:"113620e950",cat:"Sport",d:1,q:"Welke sport doe je op een 'board' in de sneeuw?",a:["Skiën","Snowboarden","Langlaufen","Schansspringen"],c:1},
+{v:"8caff70e78",cat:"Sport",d:1,q:"Hoeveel kegels staan er bij bowlen?",a:["8","9","10","12"],c:2},
+// Kennis (wetenschap, geschiedenis, aardrijkskunde)
+{v:"07b3684c29",cat:"Aardrijkskunde",d:1,q:"Wat is de hoofdstad van Spanje?",a:["Barcelona","Madrid","Sevilla","Valencia"],c:1},
+{v:"1bd46af60d",cat:"Aardrijkskunde",d:1,q:"Welke oceaan ligt tussen Europa en Amerika?",a:["Stille Oceaan","Atlantische Oceaan","Indische Oceaan","Noordelijke IJszee"],c:1},
+{v:"c1f7378333",cat:"Aardrijkskunde",d:2,q:"Welk land heeft de meeste inwoners?",a:["China","India","Verenigde Staten","Indonesië"],c:1},
+{v:"c46a1d03d3",cat:"Aardrijkskunde",d:2,q:"Wat is de hoofdstad van België?",a:["Antwerpen","Brussel","Gent","Luik"],c:1},
+{v:"f2f8f358e2",cat:"Aardrijkskunde",d:1,q:"Hoeveel continenten zijn er?",a:["5","6","7","8"],c:2},
+{v:"69fe6326de",cat:"Aardrijkskunde",d:3,q:"Welke rivier is de langste ter wereld volgens de meeste bronnen?",a:["Amazone","Nijl","Yangtze","Mississippi"],c:1},
+{v:"03eb9a6fec",cat:"Aardrijkskunde",d:2,q:"In welk land ligt Machu Picchu?",a:["Mexico","Peru","Chili","Bolivia"],c:1},
+{v:"baed85e514",cat:"Aardrijkskunde",d:2,q:"Wat is de hoogste berg ter wereld?",a:["K2","Mount Everest","Kilimanjaro","Mont Blanc"],c:1},
+{v:"24fa59360b",cat:"Aardrijkskunde",d:1,q:"Welke zee ligt ten noorden van Nederland?",a:["Oostzee","Noordzee","Waddenzee","Middellandse Zee"],c:1},
+{v:"43f10c1b67",cat:"Aardrijkskunde",d:3,q:"Wat is de hoofdstad van Zwitserland?",a:["Zürich","Genève","Bern","Bazel"],c:2},
+{v:"d805a8a302",cat:"Aardrijkskunde",d:2,q:"Welk land grenst niet aan Duitsland?",a:["Polen","Oostenrijk","Hongarije","Denemarken"],c:2},
+{v:"becc436b0f",cat:"Aardrijkskunde",d:1,q:"Welk land heeft de vorm van een laars?",a:["Spanje","Italië","Griekenland","Portugal"],c:1},
+{v:"09bf094505",cat:"Geschiedenis",d:1,q:"Wie ontdekte Amerika in 1492?",a:["Marco Polo","Christoffel Columbus","Vasco da Gama","Magellaan"],c:1},
+{v:"c4760b3544",cat:"Geschiedenis",d:2,q:"In welk jaar eindigde de Tweede Wereldoorlog?",a:["1944","1945","1946","1947"],c:1},
+{v:"cee01e7749",cat:"Geschiedenis",d:2,q:"Wie was de eerste president van de Verenigde Staten?",a:["Abraham Lincoln","George Washington","Thomas Jefferson","John Adams"],c:1},
+{v:"2570d58152",cat:"Geschiedenis",d:3,q:"In welk jaar werd de VOC opgericht?",a:["1588","1602","1621","1648"],c:1},
+{v:"86faecb749",cat:"Geschiedenis",d:1,q:"In welk land stonden de piramides van Gizeh?",a:["Mexico","Egypte","Irak","Soedan"],c:1},
+{v:"c9e84847f3",cat:"Geschiedenis",d:2,q:"Welke Nederlandse zeeheld voer de Theems op in 1667?",a:["Piet Hein","Michiel de Ruyter","Maarten Tromp","Witte de With"],c:1},
+{v:"ec80eb87ae",cat:"Geschiedenis",d:2,q:"Wie schreef het dagboek dat na de oorlog wereldberoemd werd in Amsterdam?",a:["Anne Frank","Etty Hillesum","Miep Gies","Hannah Goslar"],c:0},
+{v:"7b1ecea791",cat:"Geschiedenis",d:3,q:"In welk jaar werd Willem van Oranje vermoord?",a:["1572","1584","1600","1609"],c:1},
+{v:"be58e18592",cat:"Geschiedenis",d:1,q:"Welk volk bouwde het Colosseum?",a:["Grieken","Romeinen","Egyptenaren","Perzen"],c:1},
+{v:"11e37df23c",cat:"Geschiedenis",d:2,q:"Wie was de leider van de Sovjet-Unie tijdens de Tweede Wereldoorlog?",a:["Lenin","Stalin","Chroesjtsjov","Trotski"],c:1},
+{v:"6a7c9a2544",cat:"Geschiedenis",d:2,q:"In welk jaar landde de eerste mens op de maan?",a:["1965","1969","1972","1975"],c:1},
+{v:"84628cd039",cat:"Geschiedenis",d:3,q:"In welk jaar vond de Watersnoodramp in Zeeland plaats?",a:["1944","1953","1962","1970"],c:1},
+{v:"5c140469a6",cat:"Geschiedenis",d:1,q:"Wie was de koningin van Nederland vóór Beatrix?",a:["Wilhelmina","Juliana","Emma","Máxima"],c:1},
+{v:"aa527009c1",cat:"Wetenschap",d:1,q:"Welke planeet staat het dichtst bij de zon?",a:["Venus","Mercurius","Mars","Aarde"],c:1},
+{v:"e4d38297f3",cat:"Wetenschap",d:1,q:"Hoeveel poten heeft een spin?",a:["6","8","10","12"],c:1},
+{v:"4f1fddd947",cat:"Wetenschap",d:2,q:"Wat is H2O?",a:["Zuurstof","Water","Waterstofperoxide","Zout"],c:1},
+{v:"199e84b0fc",cat:"Wetenschap",d:2,q:"Welk orgaan pompt het bloed door het lichaam?",a:["Longen","Hart","Lever","Nieren"],c:1},
+{v:"d0c14cf5ba",cat:"Wetenschap",d:3,q:"Wat is de snelheid van het licht ongeveer?",a:["300.000 km/s","150.000 km/s","1.000.000 km/s","30.000 km/s"],c:0},
+{v:"90f2016088",cat:"Wetenschap",d:2,q:"Welk gas ademen mensen uit?",a:["Zuurstof","Koolstofdioxide","Stikstof","Helium"],c:1},
+{v:"52367831d7",cat:"Wetenschap",d:1,q:"Hoeveel planeten heeft ons zonnestelsel?",a:["7","8","9","10"],c:1},
+{v:"82a5a2eaec",cat:"Wetenschap",d:2,q:"Wat is het grootste zoogdier ter wereld?",a:["Olifant","Blauwe vinvis","Giraffe","Nijlpaard"],c:1},
+{v:"31164dbad3",cat:"Wetenschap",d:3,q:"Wat is het atoomnummer van koolstof?",a:["4","6","8","12"],c:1},
+{v:"250ff37fc5",cat:"Wetenschap",d:2,q:"Welke wetenschapper ontdekte de zwaartekracht volgens het verhaal met de appel?",a:["Galilei","Newton","Einstein","Kepler"],c:1},
+{v:"528b4b4223",cat:"Wetenschap",d:1,q:"Hoeveel tanden heeft een volwassen mens normaal gesproken (inclusief verstandskiezen)?",a:["28","30","32","34"],c:2},
+{v:"e8156f82df",cat:"Wetenschap",d:2,q:"Welk metaal is vloeibaar bij kamertemperatuur?",a:["Lood","Kwik","Tin","Zink"],c:1},
+{v:"a90804cc61",cat:"Wetenschap",d:2,q:"Wat is de grootste planeet van ons zonnestelsel?",a:["Saturnus","Jupiter","Neptunus","Uranus"],c:1},
+{v:"67517de4ca",cat:"Wetenschap",d:3,q:"Hoeveel chromosomen heeft een mens normaal gesproken?",a:["23","44","46","48"],c:2},
+{v:"e0c9d77b94",cat:"Wetenschap",d:1,q:"Wat is het snelste landdier?",a:["Leeuw","Jachtluipaard","Antilope","Paard"],c:1},
+{v:"0588068f5a",cat:"Wetenschap",d:2,q:"Welke bloedgroep is de 'universele donor'?",a:["A","B","AB","O"],c:3},
+{v:"e281f21167",cat:"Wetenschap",d:2,q:"Welk deel van de plant neemt water op uit de grond?",a:["Blad","Stengel","Wortel","Bloem"],c:2},
+// Lifestyle (eten, taal, algemeen)
+{v:"6072dbab16",cat:"Eten & Drinken",d:1,q:"Van welke vrucht wordt wijn meestal gemaakt?",a:["Appel","Druif","Pruim","Kers"],c:1},
+{v:"2d9ff8b6a8",cat:"Eten & Drinken",d:2,q:"Uit welk land komt parmezaanse kaas?",a:["Frankrijk","Italië","Spanje","Zwitserland"],c:1},
+{v:"5b6c4bc527",cat:"Eten & Drinken",d:1,q:"Wat is sushi oorspronkelijk?",a:["Chinees","Japans","Koreaans","Thais"],c:1},
+{v:"19f83fb9c3",cat:"Eten & Drinken",d:2,q:"Welk ingrediënt maakt brood luchtig?",a:["Suiker","Gist","Zout","Boter"],c:1},
+{v:"96ed26d131",cat:"Eten & Drinken",d:2,q:"Wat is een stroopwafel-vulling?",a:["Honing","Karamelstroop","Chocolade","Jam"],c:1},
+{v:"8fd9e95baa",cat:"Eten & Drinken",d:3,q:"Uit welk land komt het gerecht 'bobotie'?",a:["Zuid-Afrika","Indonesië","Suriname","Marokko"],c:0},
+{v:"1a999a6057",cat:"Eten & Drinken",d:1,q:"Welke drank is populair bij Oktoberfest?",a:["Wijn","Bier","Cider","Whisky"],c:1},
+{v:"c4befba1fe",cat:"Eten & Drinken",d:2,q:"Wat is het hoofdingrediënt van hummus?",a:["Linzen","Kikkererwten","Bonen","Erwten"],c:1},
+{v:"ea510dd335",cat:"Eten & Drinken",d:2,q:"Welk vlees zit meestal in snert?",a:["Kip","Rookworst","Gehakt","Kalfsvlees"],c:1},
+{v:"3ea7f4ad1a",cat:"Eten & Drinken",d:1,q:"Welk land staat bekend om tapas?",a:["Italië","Spanje","Portugal","Griekenland"],c:1},
+{v:"fc66fe8902",cat:"Eten & Drinken",d:3,q:"Hoeveel procent alcohol heeft wijn gemiddeld ongeveer?",a:["5%","9%","13%","20%"],c:2},
+{v:"439a4594d2",cat:"Eten & Drinken",d:2,q:"Wat is de belangrijkste smaak van wasabi?",a:["Zoet","Scherp","Zuur","Bitter"],c:1},
+{v:"245c93d786",cat:"Eten & Drinken",d:2,q:"Welk gebak hoort bij Sinterklaas?",a:["Oliebol","Pepernoot","Tompouce","Stroopwafel"],c:1},
+{v:"babcb1c6cc",cat:"Eten & Drinken",d:1,q:"Welke kleur heeft een rijpe banaan?",a:["Groen","Geel","Rood","Bruin"],c:1},
+{v:"4b4e1c631b",cat:"Taal",d:2,q:"Wat is het meervoud van 'museum'?",a:["Museums","Musea","Museumen","Musees"],c:1},
+{v:"93f92b2651",cat:"Taal",d:1,q:"Wat betekent 'bonjour'?",a:["Tot ziens","Goedendag","Dankjewel","Alsjeblieft"],c:1},
+{v:"dbb53633a9",cat:"Taal",d:2,q:"Hoe schrijf je het correct?",a:["Onmiddelijk","Onmiddellijk","Onmidellijk","Onmidelijk"],c:1},
+{v:"5088de9cb3",cat:"Taal",d:3,q:"Welk woord is een palindroom?",a:["Lepel","Tafel","Stoel","Kast"],c:0},
+{v:"eb6354ac79",cat:"Taal",d:2,q:"Wat betekent het Engelse woord 'scissors'?",a:["Mes","Schaar","Vork","Lepel"],c:1},
+{v:"a18a86a9f2",cat:"Taal",d:1,q:"Hoeveel klinkers heeft het woord 'quiz'?",a:["1","2","3","4"],c:1},
+{v:"05325e43d2",cat:"Taal",d:2,q:"Welke taal spreekt men in Brazilië?",a:["Spaans","Portugees","Braziliaans","Frans"],c:1},
+{v:"41a33b7a4e",cat:"Taal",d:3,q:"Wat is een synoniem voor 'parmantig'?",a:["Verdrietig","Trots","Lui","Bang"],c:1},
+{v:"fd0d7c9a0f",cat:"Taal",d:2,q:"Welk Nederlands woord is in het Engels overgenomen als 'cookie'?",a:["Koek","Koekje","Kaak","Kook"],c:1},
+{v:"dd1d72d91a",cat:"Algemeen",d:1,q:"Hoeveel dagen heeft een schrikkeljaar?",a:["364","365","366","367"],c:2},
+{v:"126c79dcf3",cat:"Algemeen",d:1,q:"Hoeveel uur zitten er in een week?",a:["144","168","172","186"],c:1},
+{v:"3e01ac7089",cat:"Algemeen",d:2,q:"Welk sterrenbeeld hoort bij eind maart tot eind april?",a:["Vissen","Ram","Stier","Tweelingen"],c:1},
+{v:"d08a6fabdf",cat:"Algemeen",d:2,q:"Hoeveel vakjes heeft een schaakbord?",a:["36","49","64","81"],c:2},
+{v:"60a3288bc2",cat:"Algemeen",d:3,q:"Welke kleur krijg je door rood en blauw te mengen?",a:["Groen","Paars","Oranje","Bruin"],c:1},
+{v:"87edc1b4d5",cat:"Algemeen",d:1,q:"Wat is de valuta van Japan?",a:["Yuan","Yen","Won","Ringgit"],c:1},
+{v:"b0bf0f9117",cat:"Algemeen",d:2,q:"Hoeveel centimeter is een inch ongeveer?",a:["1,5","2,54","3","4,2"],c:1},
+{v:"9b8aef2948",cat:"Algemeen",d:2,q:"Wat is de hoofdkleur van de Ferrari-auto's in de Formule 1?",a:["Blauw","Rood","Geel","Zwart"],c:1},
+{v:"049f5c6e3c",cat:"Algemeen",d:1,q:"Hoeveel zijden heeft een dobbelsteen?",a:["4","6","8","12"],c:1},
+{v:"1c9162d100",cat:"Algemeen",d:3,q:"Hoeveel procent is een kwart?",a:["20%","25%","33%","40%"],c:1},
+{v:"3bec7fc3d2",cat:"Algemeen",d:2,q:"Welk bedrijf maakt de iPhone?",a:["Samsung","Apple","Google","Huawei"],c:1},
+{v:"375e455bfb",cat:"Algemeen",d:2,q:"Wat is de officiële valuta van het Verenigd Koninkrijk?",a:["Euro","Pond","Dollar","Frank"],c:1},
+{v:"30e89c3d4b",cat:"Algemeen",d:1,q:"Welke dag komt na woensdag?",a:["Dinsdag","Donderdag","Vrijdag","Maandag"],c:1},
+{v:"ce978898a7",cat:"Algemeen",d:2,q:"Hoeveel seconden zitten er in een kwartier?",a:["600","900","1200","1500"],c:1},
+{v:"dc6f9bab60",cat:"Algemeen",d:3,q:"Welke maand heeft in een gewoon jaar 28 dagen?",a:["Januari","Februari","Maart","April"],c:1},
+{v:"08f596842f",cat:"Algemeen",d:2,q:"Welke kleuren heeft het IKEA-logo?",a:["Rood en wit","Blauw en geel","Groen en wit","Zwart en geel"],c:1},
+// Nederland
+{v:"322ef7978b",cat:"Nederland",d:1,q:"Wat is de hoofdstad van Nederland?",a:["Den Haag","Amsterdam","Rotterdam","Utrecht"],c:1},
+{v:"283ec590d7",cat:"Nederland",d:1,q:"In welke stad zetelt de Nederlandse regering?",a:["Amsterdam","Den Haag","Utrecht","Rotterdam"],c:1},
+{v:"3ad4f11a65",cat:"Nederland",d:2,q:"Welke provincie heeft Zwolle als hoofdstad?",a:["Gelderland","Overijssel","Drenthe","Flevoland"],c:1},
+{v:"6d57fd38a2",cat:"Nederland",d:2,q:"Hoe heet de grootste haven van Nederland?",a:["Amsterdam","Rotterdam","Vlissingen","Delfzijl"],c:1},
+{v:"1845e9afdf",cat:"Nederland",d:1,q:"Op welke datum is Koningsdag?",a:["30 april","27 april","5 mei","1 mei"],c:1},
+{v:"39ac327576",cat:"Nederland",d:3,q:"Welke Nederlandse stad heeft de bijnaam 'Stad van de Peperbus'?",a:["Zwolle","Deventer","Kampen","Apeldoorn"],c:0},
+{v:"d8eb2c7b20",cat:"Nederland",d:2,q:"In welke provincie ligt Leeuwarden?",a:["Groningen","Friesland","Drenthe","Noord-Holland"],c:1},
+{v:"5f53085392",cat:"Nederland",d:2,q:"Hoe heet het nationale park op de Veluwe met het Kröller-Müller Museum?",a:["De Hoge Veluwe","Veluwezoom","De Biesbosch","Weerribben"],c:0},
+{v:"3d2a491553",cat:"Nederland",d:1,q:"Welke bloem is het symbool van Nederland?",a:["Roos","Tulp","Narcis","Zonnebloem"],c:1},
+{v:"05529dc1de",cat:"Nederland",d:3,q:"Hoeveel Waddeneilanden zijn permanent bewoond in Nederland?",a:["4","5","6","7"],c:1},
+{v:"2b4bc992d5",cat:"Nederland",d:2,q:"Welke stad staat bekend om de Dom?",a:["Groningen","Utrecht","Leiden","Haarlem"],c:1},
+{v:"f08a794d1b",cat:"Nederland",d:2,q:"Welk Nederlands eiland is het grootste Waddeneiland?",a:["Vlieland","Texel","Terschelling","Ameland"],c:1},
+{v:"5f701faba5",cat:"Nederland",d:1,q:"Welke kleuren heeft de Nederlandse vlag?",a:["Rood, wit, blauw","Oranje, wit, blauw","Rood, geel, blauw","Rood, wit, groen"],c:0},
+{v:"5086996cd9",cat:"Nederland",d:2,q:"Hoe heet de premier van Nederland die in 2024 aantrad?",a:["Mark Rutte","Dick Schoof","Geert Wilders","Rob Jetten"],c:1},
+{v:"0ac47b57eb",cat:"Nederland",d:3,q:"Op welke datum in 1572 namen de Watergeuzen Den Briel in?",a:["1 april","1 mei","1 juni","1 juli"],c:0},
+{v:"b1f8c1894d",cat:"Nederland",d:2,q:"Welke Nederlandse stad heeft het Mauritshuis?",a:["Amsterdam","Den Haag","Delft","Leiden"],c:1},
+{v:"08074fe816",cat:"Nederland",d:1,q:"Welke Nederlandse stad is bekend om zijn grachten én de Wallen?",a:["Utrecht","Amsterdam","Leiden","Delft"],c:1},
+{v:"326bd7fe06",cat:"Nederland",d:2,q:"Welke stad noemt zich 'Lichtstad'?",a:["Eindhoven","Tilburg","Breda","Nijmegen"],c:0},
+{v:"58e8473d8e",cat:"Nederland",d:2,q:"Hoe heet het grootste meer van Nederland?",a:["Markermeer","IJsselmeer","Sneekermeer","Veluwemeer"],c:1},
+{v:"c279287160",cat:"Nederland",d:3,q:"In welk jaar werd Nederland een koninkrijk?",a:["1795","1806","1815","1848"],c:2},
+{v:"7913dbf141",cat:"Nederland",d:1,q:"Welke Nederlandse stad heeft het Rijksmuseum?",a:["Amsterdam","Den Haag","Rotterdam","Utrecht"],c:0},
+{v:"d3b2067a13",cat:"Nederland",d:2,q:"Welke Nederlandse provincie is het kleinst in oppervlakte?",a:["Utrecht","Flevoland","Zeeland","Limburg"],c:0},
+{v:"360e3728a5",cat:"Nederland",d:2,q:"Hoe heet de Nederlandse snelweg tussen Amsterdam en Utrecht?",a:["A1","A2","A4","A12"],c:1},
+{v:"4e661ba9e5",cat:"Nederland",d:2,q:"Welk Nederlands dorp staat bekend om de Zaanse Schans?",a:["Zaandam","Zaandijk","Volendam","Marken"],c:1},
+{v:"3cb2282b54",cat:"Nederland",d:1,q:"Welke Nederlandse voetbalclub speelt in Rotterdam?",a:["Ajax","Feyenoord","PSV","AZ"],c:1},
+{v:"6c8b419018",cat:"Nederland",d:3,q:"Hoeveel zetels heeft de Eerste Kamer?",a:["50","75","100","150"],c:1},
+{v:"1f5feb64e7",cat:"Nederland",d:2,q:"Welke Nederlandse stad is de hoofdstad van Limburg?",a:["Venlo","Maastricht","Roermond","Heerlen"],c:1},
+{v:"94c88897c3",cat:"Nederland",d:2,q:"Hoe heet de Nederlandse koningin (echtgenote van Willem-Alexander)?",a:["Beatrix","Máxima","Amalia","Laurentien"],c:1},
+{v:"4f5bad1288",cat:"Nederland",d:1,q:"Welke Nederlandse stad heeft de Erasmusbrug?",a:["Amsterdam","Rotterdam","Den Haag","Utrecht"],c:1},
 ];
+
+const RANKQ = [{"cat":"Kennis","q":"Zet op volgorde van klein naar groot (oppervlakte)","items":["Nederland","Frankrijk","Brazilië","Rusland"],"v":"4ab7ddb6ce"},
+{"cat":"Kennis","q":"Zet op volgorde van dichtbij naar ver van de zon","items":["Mercurius","Aarde","Jupiter","Neptunus"],"v":"420345aad1"},
+{"cat":"Kennis","q":"Zet op volgorde van vroeg naar laat","items":["Val van Rome (476)","Ontdekking Amerika (1492)","Franse Revolutie (1789)","Eerste maanlanding (1969)"],"v":"84a962f520"},
+{"cat":"Kennis","q":"Zet op volgorde van licht naar zwaar (gemiddeld volwassen dier)","items":["Kat","Hond (labrador)","Paard","Olifant"],"v":"bd38ebb3a8"},
+{"cat":"Kennis","q":"Zet op volgorde van weinig naar veel inwoners","items":["IJsland","België","Duitsland","India"],"v":"bdb537f35c"},
+{"cat":"Kennis","q":"Zet op volgorde van laag naar hoog","items":["Eiffeltoren (330 m)","Empire State Building (443 m)","Shanghai Tower (632 m)","Burj Khalifa (828 m)"],"v":"42096f613f"},
+{"cat":"Kennis","q":"Zet op volgorde van koud naar warm","items":["Noordpool","Amsterdam in januari","Rome in juli","Sahara in juli"],"v":"600cb9a383"},
+{"cat":"Kennis","q":"Zet op volgorde van kort naar lang (rivier)","items":["Amstel","Rijn","Donau","Nijl"],"v":"32889760b5"},
+{"cat":"Nederland","q":"Zet op volgorde van weinig naar veel inwoners","items":["Leeuwarden","Groningen","Utrecht","Amsterdam"],"v":"949ee89c2d"},
+{"cat":"Nederland","q":"Zet op volgorde van zuid naar noord","items":["Maastricht","Eindhoven","Utrecht","Groningen"],"v":"83723ebf26"},
+{"cat":"Nederland","q":"Zet op volgorde van vroeg naar laat (regeerperiode)","items":["Wilhelmina","Juliana","Beatrix","Willem-Alexander"],"v":"6001d69639"},
+{"cat":"Nederland","q":"Zet op volgorde van west naar oost","items":["Den Haag","Utrecht","Apeldoorn","Enschede"],"v":"0582917364"},
+{"cat":"Film & TV","q":"Zet op volgorde van oud naar nieuw (eerste film)","items":["Star Wars (1977)","Jurassic Park (1993)","Harry Potter (2001)","Frozen (2013)"],"v":"9c23a7bbba"},
+{"cat":"Film & TV","q":"Zet op volgorde van oud naar nieuw (start serie)","items":["Friends (1994)","Breaking Bad (2008)","Game of Thrones (2011)","Stranger Things (2016)"],"v":"b14f5003b3"},
+{"cat":"Film & TV","q":"Zet op volgorde van klein naar groot (bioscoopopbrengst)","items":["Shrek","Frozen","Titanic","Avatar"],"v":"df15f6d317"},
+{"cat":"Muziek","q":"Zet op volgorde van oud naar nieuw (debuut)","items":["The Beatles","ABBA","Nirvana","Billie Eilish"],"v":"492c521df0"},
+{"cat":"Muziek","q":"Zet op volgorde van laag naar hoog (toon)","items":["Bas","Tenor","Alt","Sopraan"],"v":"52c4252368"},
+{"cat":"Muziek","q":"Zet op volgorde van weinig naar veel snaren","items":["Ukelele (4)","Gitaar (6)","Twaalfsnarige gitaar (12)","Harp (47)"],"v":"f39f88cc84"},
+{"cat":"Muziek","q":"Zet op volgorde van oud naar nieuw (uitgebracht)","items":["Bohemian Rhapsody","Thriller","Wonderwall","Blinding Lights"],"v":"28de951331"},
+{"cat":"Sport","q":"Zet op volgorde van kort naar lang (afstand)","items":["100 m sprint","1500 m","10 km","Marathon"],"v":"46d3a9145d"},
+{"cat":"Sport","q":"Zet op volgorde van weinig naar veel spelers per team op het veld","items":["Basketbal (5)","Volleybal (6)","Hockey (11)","Rugby (15)"],"v":"fe34dd062f"},
+{"cat":"Sport","q":"Zet op volgorde van vroeg naar laat (WK voetbal gewonnen)","items":["Uruguay (1930)","Engeland (1966)","Frankrijk (1998)","Argentinië (2022)"],"v":"da17d0c2f8"},
+{"cat":"Sport","q":"Zet op volgorde van klein naar groot (bal)","items":["Golfbal","Tennisbal","Voetbal","Basketbal"],"v":"3da9f8e2b4"},
+{"cat":"Lifestyle","q":"Zet op volgorde van weinig naar veel calorieën (per 100 g)","items":["Komkommer","Appel","Brood","Pindakaas"],"v":"0ae13e215f"},
+{"cat":"Lifestyle","q":"Zet op volgorde van weinig naar veel alcohol (gemiddeld %)","items":["Bier","Wijn","Port","Wodka"],"v":"cc614422c6"},
+{"cat":"Lifestyle","q":"Zet op volgorde van kort naar lang (zwangerschap)","items":["Hamster (16 dagen)","Hond (63 dagen)","Mens (9 maanden)","Olifant (22 maanden)"],"v":"345bee1997"},
+{"cat":"Lifestyle","q":"Zet op volgorde van goedkoop naar duur (gemiddeld)","items":["Kop koffie","Bioscoopkaartje","Spijkerbroek","Smartphone"],"v":"30fcd5c6f3"}];
+
 </script>
 <script>
 'use strict';
 const SUPA_URL='https://kumksnqblhjgdhbvxcji.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWtzbnFibGhqZ2RoYnZ4Y2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMjUzOTcsImV4cCI6MjEwNzkwMTM5N30.tuV5kiQT3jrbGrRDcx9c-WG7eGy2yex8vtJrkeA2150';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{realtime:{params:{eventsPerSecond:40}}});
-
+const MEDIA='media/';
+const CHARS=[['kees','Opa Kees'],['bep','Tante Bep'],['nova','DJ Nova'],['storm','Kapitein Storm'],['pim','Professor Pim'],['bo','Bo de Bouwer'],['yuki','Yuki'],['ravioli','Sjef Ravioli'],['rik','Ruimte-Rik'],['lola','Koningin Lola'],['bas','Beer Bas'],['r10','Robot R-10']];
+const charImg=id=>MEDIA+'char/'+(CHARS.some(c=>c[0]===id)?id:'kees')+'.webp';
+const CHANNELS={
+  film:{name:'Film & TV',cats:['Film & TV'],color:'#ff7a1a'},
+  muziek:{name:'Muziek',cats:['Muziek'],color:'#ff3d8a'},
+  sport:{name:'Sport',cats:['Sport'],color:'#2ecc71'},
+  kennis:{name:'Kennis',cats:['Aardrijkskunde','Geschiedenis','Wetenschap'],color:'#2f7bff'},
+  lifestyle:{name:'Lifestyle',cats:['Eten & Drinken','Taal','Algemeen'],color:'#ffd400'},
+  nl:{name:'Nederland',cats:['Nederland'],color:'#ff5252'},
+  mix:{name:'Mix',cats:null,color:'#c58cff'},
+};
 const ROUNDS={
-  pb:{name:'Punten Bouwer',desc:'Iedereen antwoordt op z’n telefoon. Goed antwoord = +150.',time:12000,n:5,color:'#2f7bff'},
-  ff:{name:'Snelste Vinger',desc:'Hoe sneller je goed antwoordt, hoe meer punten: van 500 naar 100.',time:10000,n:5,color:'#ff7a1a'},
-  ps:{name:'Puntendief',desc:'Buzz om te antwoorden. Goed +300. Fout −100 en de anderen mogen buzzen.',time:10000,n:5,color:'#ff2d2d'},
-  fc:{name:'Final Countdown',desc:'Punten tikken weg van 400 naar 100. Fout antwoord = −200.',time:12000,n:5,color:'#ffd400'},
+  pb:{name:'Punten Bouwer',desc:'Iedereen antwoordt. Goed = +150.',time:12000,color:'#2f7bff',voice:'intro_pb'},
+  ff:{name:'Snelste Vinger',desc:'Hoe sneller goed, hoe meer punten: 500 → 100.',time:10000,color:'#ff7a1a',voice:'intro_ff'},
+  ps:{name:'Puntendief',desc:'Buzz om te antwoorden. Goed +300, fout −100 en de rest mag.',time:10000,color:'#ff2d2d',voice:'intro_ps'},
+  pie:{name:'Pie Fight',desc:'Goed antwoord = +100 én een taart gooien: slachtoffer −100.',time:12000,color:'#fff0b0',voice:'intro_pie'},
+  bomb:{name:'Pass the Bomb',desc:'Antwoord goed om de bom door te geven. Ontploft hij bij jou: −300, de rest +100.',time:7000,color:'#ff8c00',voice:'intro_bomb'},
+  stakes:{name:'High Stakes',desc:'Zet 100, 250 of 500 in vóór je de vraag ziet. Goed: erbij. Fout: eraf.',time:12000,color:'#ffd400',voice:'intro_stakes'},
+  rank:{name:'Top Rank',desc:'Zet vier dingen op volgorde. +100 per juiste plek.',time:20000,color:'#c58cff',voice:'intro_rank'},
+  fc:{name:'Final Countdown',desc:'Punten tikken weg van 400 naar 100. Fout = −200.',time:12000,color:'#ffd400',voice:'intro_fc'},
 };
 const KEYS=['A','B','C','D'];
 const app=document.getElementById('app');
@@ -289,12 +619,13 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random(
 const uid=()=>Math.random().toString(36).slice(2,10);
 const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
-const MEDIA='media/';
+const rnd=a=>a[Math.random()*a.length|0];
 
-/* ---------- Audio (gesynthetiseerd, geen assets) ---------- */
+/* ---------- Audio ---------- */
 let AC=null,soundOn=true,voiceOn=ls.get('buzz.voice',true),fastMode=ls.get('buzz.fast',false),autoMode=ls.get('buzz.auto',true);
 function audioInit(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume()}
 function tone(f,t,type='sine',g=.25,at=0){if(!AC||!soundOn)return;const o=AC.createOscillator(),v=AC.createGain();o.type=type;o.frequency.value=f;v.gain.value=0;o.connect(v);v.connect(AC.destination);const s=AC.currentTime+at;v.gain.setValueAtTime(0,s);v.gain.linearRampToValueAtTime(g,s+.01);v.gain.exponentialRampToValueAtTime(.001,s+t);o.start(s);o.stop(s+t+.05)}
+function noise(t,g=.25,f0=400,f1=3000,type='bandpass'){if(!AC||!soundOn)return;const n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*t,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=b;const f=AC.createBiquadFilter();f.type=type;f.frequency.setValueAtTime(f0,AC.currentTime);f.frequency.exponentialRampToValueAtTime(f1,AC.currentTime+t*.8);const gn=AC.createGain();gn.gain.value=g;n.connect(f);f.connect(gn);gn.connect(AC.destination);n.start()}
 const SFX={
   buzz(){tone(180,.35,'sawtooth',.3)},
   correct(){tone(660,.15,'square',.15);tone(990,.3,'square',.15,.12)},
@@ -303,14 +634,19 @@ const SFX={
   reveal(){tone(440,.1,'triangle',.2);tone(554,.1,'triangle',.2,.1);tone(659,.35,'triangle',.2,.2)},
   fanfare(){[523,659,784,1047].forEach((f,i)=>tone(f,.25,'square',.15,i*.15));tone(1047,.8,'square',.15,.6)},
   join(){tone(880,.08,'sine',.15);tone(1174,.12,'sine',.15,.08)},
-  whoosh(){if(!AC||!soundOn)return;const n=AC.createBufferSource(),b=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=b;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.setValueAtTime(400,AC.currentTime);f.frequency.exponentialRampToValueAtTime(3000,AC.currentTime+.4);const g=AC.createGain();g.gain.value=.25;n.connect(f);f.connect(g);g.connect(AC.destination);n.start()},
+  whoosh(){noise(.5,.25)},
+  applause(){noise(1.6,.18,1500,2500,'highpass');setTimeout(()=>noise(1.2,.12,1500,2200,'highpass'),400)},
+  boo(){tone(150,.6,'sawtooth',.12);tone(140,.6,'sawtooth',.12,.1)},
   drum(){if(!AC||!soundOn)return;for(let i=0;i<16;i++)tone(90,.08,'triangle',.3,i*.11)},
   flip(){tone(1500,.04,'square',.06)},
   countTick(){tone(880,.12,'square',.18)},
   countGo(){tone(1320,.5,'square',.2)},
+  splat(){noise(.25,.35,200,80,'lowpass');tone(90,.2,'sine',.3)},
+  boom(){noise(1.2,.5,120,40,'lowpass');tone(50,.9,'sine',.5)},
+  fuse(){tone(2400,.03,'square',.05)},
+  coin(){tone(1760,.06,'square',.12);tone(2217,.18,'square',.12,.06)},
 };
-/* ---------- Presentator (vooraf gegenereerde clips, fallback browser-TTS) ---------- */
-const Voice={cache:{},cur:null,
+const Voice={cache:{},cur:null,curFin:null,
   load(k){if(!this.cache[k]){const a=new Audio(MEDIA+'voice/'+k+'.mp3');a.preload='auto';this.cache[k]=a}return this.cache[k]},
   preload(...ks){ks.forEach(k=>k&&this.load(k))},
   say(k,fallback){
@@ -324,9 +660,9 @@ const Voice={cache:{},cur:null,
   stop(){const f=this.curFin;if(this.cur){try{this.cur.pause()}catch(e){}this.cur.onended=null;this.cur=null}this.curFin=null;try{speechSynthesis.cancel()}catch(e){}if(f)f()},
   pick(prefix,n){return prefix+(1+Math.floor(Math.random()*n))},
 };
-/* ---------- Confetti ---------- */
 function confetti(ms=6000){const c=document.createElement('canvas');c.id='confetti';document.body.appendChild(c);const x=c.getContext('2d');const W=c.width=innerWidth,H=c.height=innerHeight;const cols=['#ff3d8a','#ffd400','#2f7bff','#2ecc71','#ff7a1a','#fff'];const P=Array.from({length:220},()=>({x:Math.random()*W,y:-20-Math.random()*H,vx:(Math.random()-.5)*2,vy:2+Math.random()*4,r:4+Math.random()*6,c:cols[Math.random()*cols.length|0],a:Math.random()*6,va:(Math.random()-.5)*.3}));const t0=Date.now();(function f(){x.clearRect(0,0,W,H);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.va;if(p.y>H+20){p.y=-20;p.x=Math.random()*W}x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()});if(Date.now()-t0<ms)requestAnimationFrame(f);else c.remove()})()}
 function countUp(el,from,to,ms=700){if(!el)return;const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/ms),e=1-Math.pow(1-k,3);el.textContent=Math.round(from+(to-from)*e);if(k<1)requestAnimationFrame(f)})(t0)}
+function flashScreen(cls){const f=document.createElement('div');f.className='flash '+(cls||'');document.body.appendChild(f);setTimeout(()=>f.remove(),800)}
 
 /* ---------- Routing ---------- */
 const params=new URLSearchParams(location.search);
@@ -344,17 +680,18 @@ function landing(){
     <p class="muted">Eén scherm host het spel, iedereen speelt mee op z’n telefoon.</p>
   </div>`;
   app.onclick=e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;audioInit();
-    if(a==='host')Host.setup();else if(a==='resume')Host.resume(savedHost);else if(a==='join')Player.form(params.get('c')||'');else if(a==='rejoin')Player.join(saved.code,saved.name,saved.pid)};
+    if(a==='host')Host.setup();else if(a==='resume')Host.resume(savedHost);else if(a==='join')Player.form(params.get('c')||'');else if(a==='rejoin')Player.join(saved.code,saved.name,saved.pid,saved.char)};
 }
 
 /* ================= HOST ================= */
 const Host={
-  S:null,ch:null,timer:null,tickTimer:null,seq:0,run:0,
+  S:null,ch:null,timer:null,tickTimer:null,fuseTimer:null,seq:0,run:0,
   setup(){
+    const def=['pb','ff','ps','pie','bomb','stakes','rank','fc'];
     app.innerHTML=`<div class="center"><h1 style="color:var(--b3)">Nieuw spel</h1>
       <div class="stack">
-        ${Object.entries(ROUNDS).map(([k,r])=>`<label class="opt"><input type="checkbox" id="r_${k}" checked><span>${esc(r.name)}<br><small>${esc(r.desc)}</small></span></label>`).join('')}
-        <label class="opt"><span>Vragen per ronde</span><input type="number" id="nq" value="5" min="3" max="10" style="width:80px"></label>
+        ${Object.entries(ROUNDS).map(([k,r])=>`<label class="opt"><input type="checkbox" id="r_${k}" ${def.includes(k)?'checked':''}><span>${esc(r.name)}<br><small>${esc(r.desc)}</small></span></label>`).join('')}
+        <label class="opt"><span>Vragen per ronde</span><input type="number" id="nq" value="4" min="3" max="10" style="width:80px"></label>
         <label class="opt"><input type="checkbox" id="o_voice" ${voiceOn?'checked':''}><span>Presentator (stem)</span></label>
         <label class="opt"><input type="checkbox" id="o_auto" ${autoMode?'checked':''}><span>Automatisch doorgaan<br><small>Uit = host drukt Enter na elke vraag</small></span></label>
         <button class="btn" data-a="create">Open de lobby</button>
@@ -364,24 +701,24 @@ const Host={
       if(a==='back')return landing();
       const order=Object.keys(ROUNDS).filter(k=>document.getElementById('r_'+k).checked);
       if(!order.length)return;
-      const nq=Math.max(3,Math.min(10,+document.getElementById('nq').value||5));
+      const nq=Math.max(3,Math.min(10,+document.getElementById('nq').value||4));
       voiceOn=document.getElementById('o_voice').checked;ls.set('buzz.voice',voiceOn);
       autoMode=document.getElementById('o_auto').checked;ls.set('buzz.auto',autoMode);
       Host.create(order,nq)};
   },
   create(order,nq){
     const code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.random()*23|0]).join('');
-    this.S={code,order,nq,phase:'lobby',players:{},plan:null,roundIdx:0,qIdx:-1,answers:{},buzzOwner:null,locked:[],timerEnd:0,timerTotal:0,qStart:0,correct:null,roundStart:{},prevOrder:[]};
-    this.connect();this.render();this.bg();Voice.preload('start','countdown');Voice.say('welcome');
+    this.S={code,order,nq,phase:'lobby',players:{},roundIdx:0,qIdx:-1,channel:null,chooser:null,used:ls.get('buzz.used',[]),cur:null,curType:null,answers:{},buzzOwner:null,locked:[],timerEnd:0,timerTotal:0,qStart:0,correct:null,roundStart:{},prevOrder:[],bomb:null,rankOrder:null,pies:[],throwers:[],streak:{}};
+    this.connect();this.render();this.bg();Voice.preload('start','countdown','choose','channel');Voice.say('welcome2');
   },
-  resume(S){this.S=S;S.roundStart=S.roundStart||{};S.prevOrder=S.prevOrder||[];if(['reading','answer','buzzing','buzzed'].includes(S.phase)){S.phase='reveal';S.correct=this.curQ()?.c??null;S.buzzOwner=null;S.timerEnd=0;Object.values(S.players).forEach(p=>{p.status='none';p.delta=0})}Object.values(S.players).forEach(p=>p.online=false);this.connect();this.render();this.bg()},
-  bg(){ // studio-achtergrond: video als media/video/studio.mp4 bestaat, anders CSS-lichtbundels
+  resume(S){this.S=S;S.roundStart=S.roundStart||{};S.prevOrder=S.prevOrder||[];S.streak=S.streak||{};if(!['lobby','scores','podium','reveal'].includes(S.phase)){S.phase='scores'}Object.values(S.players).forEach((p,i)=>{p.online=false;p.status='idle';p.delta=0;p.order=p.order??i;p.bet=0});this.connect();this.render();this.bg()},
+  bg(){
     if(document.querySelector('.stage-bg'))return;
-    const d=document.createElement('div');d.className='stage-bg';d.innerHTML=`<i class="beam"></i><i class="beam b2"></i><i class="beam b3"></i><i class="floor"></i>`;
+    const d=document.createElement('div');d.className='stage-bg';d.innerHTML=`<i class="beam"></i><i class="beam b2"></i><i class="beam b3"></i>`;
     const v=document.createElement('video');v.muted=true;v.loop=true;v.autoplay=true;v.playsInline=true;v.src=MEDIA+'video/studio.mp4';v.onerror=()=>v.remove();v.oncanplay=()=>{v.play().catch(()=>{})};d.appendChild(v);
     document.body.prepend(d);
   },
-  playClip(src,ms){ // fullscreen videoclip; slaat over als het bestand ontbreekt
+  playClip(src,ms){
     if(fastMode)return Promise.resolve();
     return new Promise(res=>{const d=document.createElement('div');d.className='vidover';const v=document.createElement('video');v.muted=true;v.playsInline=true;v.autoplay=true;v.src=src;let done=false;const fin=()=>{if(done)return;done=true;d.remove();res()};
       v.onerror=fin;v.onended=fin;v.oncanplay=()=>{v.play().catch(fin);setTimeout(fin,ms||6000)};d.appendChild(v);document.body.appendChild(d);setTimeout(()=>{if(v.readyState<2)fin()},4000)})},
@@ -392,60 +729,81 @@ const Host={
       .on('broadcast',{event:'hello'},()=>this.push())
       .on('broadcast',{event:'buzz'},({payload:p})=>this.onBuzz(p))
       .on('broadcast',{event:'answer'},({payload:p})=>this.onAnswer(p,Date.now()))
-      .on('presence',{event:'leave'},({leftPresences})=>{leftPresences.forEach(x=>{const pl=S.players[x.pid];if(pl){pl.online=false;this.render();this.push()}})})
-      .on('presence',{event:'join'},({newPresences})=>{newPresences.forEach(x=>{const pl=S.players[x.pid];if(pl&&!pl.online){pl.online=true;this.render();this.push()}})})
+      .on('broadcast',{event:'channel'},({payload:p})=>this.onChannel(p))
+      .on('broadcast',{event:'bet'},({payload:p})=>this.onBet(p))
+      .on('broadcast',{event:'rank'},({payload:p})=>this.onRank(p))
+      .on('broadcast',{event:'pie'},({payload:p})=>this.onPie(p))
+      .on('presence',{event:'leave'},({leftPresences})=>{leftPresences.forEach(x=>{const pl=S.players[x.pid];if(pl){pl.online=false;this.renderPods();this.push()}})})
+      .on('presence',{event:'join'},({newPresences})=>{newPresences.forEach(x=>{const pl=S.players[x.pid];if(pl&&!pl.online){pl.online=true;this.renderPods();this.push()}})})
       .subscribe(st=>{this.conn=st;if(st==='SUBSCRIBED'){this.ch.track({host:true});this.push()}this.render()});
   },
   onJoin(p){
     if(!p||!p.pid||typeof p.name!=='string')return;const S=this.S;
     const name=p.name.trim().slice(0,16)||'Speler';
-    if(!S.players[p.pid]){if(Object.keys(S.players).length>=12)return;S.players[p.pid]={id:p.pid,name,score:0,delta:0,status:'idle',online:true};SFX.join()}
-    else{S.players[p.pid].name=name;S.players[p.pid].online=true}
-    if(S.phase==='lobby')this.render();this.push();
+    let ch=CHARS.some(c=>c[0]===p.char)?p.char:null;
+    if(ch&&Object.values(S.players).some(x=>x.id!==p.pid&&x.char===ch))ch=null; // bezet
+    if(!S.players[p.pid]){if(Object.keys(S.players).length>=12)return;
+      if(!ch)ch=CHARS.map(c=>c[0]).find(id=>!Object.values(S.players).some(x=>x.char===id))||'kees';
+      S.players[p.pid]={id:p.pid,name,char:ch,score:0,delta:0,status:'idle',online:true,bet:0,order:Object.keys(S.players).length};SFX.join()}
+    else{S.players[p.pid].name=name;S.players[p.pid].online=true;if(ch)S.players[p.pid].char=ch}
+    if(S.phase==='lobby')this.render();else this.renderPods();this.push();
   },
   pub(){
-    const S=this.S,q=this.curQ();
-    return {seq:++this.seq,code:S.code,phase:S.phase,roundIdx:S.roundIdx,roundType:S.order[S.roundIdx],roundName:ROUNDS[S.order[S.roundIdx]]?.name,roundDesc:ROUNDS[S.order[S.roundIdx]]?.desc,
-      qIdx:S.qIdx,qTotal:S.nq,qKey:S.roundIdx*100+S.qIdx,question:q?{q:q.q,a:q.a,cat:q.cat}:null,correct:S.phase==='reveal'?S.correct:null,
-      players:Object.values(S.players).map(p=>({id:p.id,name:p.name,score:p.score,delta:p.delta,status:p.status,online:p.online})),
+    const S=this.S,q=S.cur,T=S.curType;
+    return {seq:++this.seq,code:S.code,phase:S.phase,roundIdx:S.roundIdx,roundType:T,roundName:ROUNDS[T]?.name,roundDesc:ROUNDS[T]?.desc,
+      qIdx:S.qIdx,qTotal:S.nq,qKey:S.roundIdx*100+S.qIdx+(S.bomb?':'+S.bomb.n+':'+S.bomb.qn:''),
+      question:q?(S.phase==='bet'?null:{q:q.q,a:q.a,cat:q.cat,items:S.rankOrder?S.rankOrder.map(i=>q.items[i]):null}):null,
+      correct:S.phase==='reveal'?S.correct:null,rankTruth:S.phase==='reveal'&&q?.items?q.items:null,
+      players:Object.values(S.players).map(p=>({id:p.id,name:p.name,char:p.char,score:p.score,delta:p.delta,status:p.status,online:p.online,bet:p.bet||0})),
+      taken:Object.values(S.players).map(p=>p.char),chooser:S.chooser,channel:S.channel,bombHolder:S.bomb?.holder||null,throwers:S.throwers,
       buzzOwner:S.buzzOwner,timerMs:Math.max(0,S.timerEnd-Date.now()),timerTotal:S.timerTotal};
   },
   push(){if(this.ch&&this.conn==='SUBSCRIBED')this.ch.send({type:'broadcast',event:'state',payload:this.pub()});ls.set('buzz.host',this.S)},
-  curQ(){const S=this.S;return S.plan?.[S.roundIdx]?.[S.qIdx]||null},
-  nextQ(){const S=this.S;return S.plan?.[S.roundIdx]?.[S.qIdx+1]||S.plan?.[S.roundIdx+1]?.[0]||null},
-  buildPlan(){
-    const S=this.S,used=new Set(ls.get('buzz.used',[]));
-    let pool=QUESTIONS.filter(q=>!used.has(q.q));if(pool.length<S.order.length*S.nq){pool=QUESTIONS.slice();used.clear()}
-    pool=shuffle(pool);const plan=[];
-    for(const t of S.order){
-      let pick;
-      if(t==='fc'){pick=pool.filter(q=>q.d>=2).slice(0,S.nq)}else{pick=pool.slice(0,S.nq)}
-      if(pick.length<S.nq)pick=pool.slice(0,S.nq);
-      pool=pool.filter(q=>!pick.includes(q));plan.push(pick);pick.forEach(q=>used.add(q.q));
-    }
-    ls.set('buzz.used',[...used].slice(-200));S.plan=plan;
+  /* --- vragen kiezen per zender --- */
+  pickQ(opts={}){
+    const S=this.S,ch=CHANNELS[S.channel]||CHANNELS.mix;let pool=QUESTIONS.filter(q=>(!ch.cats||ch.cats.includes(q.cat))&&!S.used.includes(q.v));
+    if(opts.hard){const h=pool.filter(q=>q.d>=2);if(h.length>=3)pool=h}
+    if(!pool.length)pool=QUESTIONS.filter(q=>!ch.cats||ch.cats.includes(q.cat));
+    if(!pool.length)pool=QUESTIONS;
+    const q=rnd(pool);S.used.push(q.v);if(S.used.length>400)S.used=S.used.slice(-400);ls.set('buzz.used',S.used);return q;
   },
-  /* --- regie: elke fase is een scène met animatie + stem; Enter breekt de scène af en gaat door --- */
+  pickRank(){const S=this.S;let pool=RANKQ.filter(r=>!S.used.includes(r.v));if(!pool.length)pool=RANKQ;const r=rnd(pool);S.used.push(r.v);return r},
+  online(){return Object.values(this.S.players).filter(p=>p.online)},
+  board(){return Object.values(this.S.players).sort((a,b)=>b.score-a.score)},
+  /* --- regie --- */
   async next(){
     const S=this.S;this.run++;Voice.stop();
-    if(S.phase==='lobby'){if(!Object.keys(S.players).length)return;this.buildPlan();S.roundIdx=0;S.qIdx=-1;this.enterIntro()}
+    if(S.phase==='lobby'){if(!Object.keys(S.players).length)return;S.roundIdx=0;S.qIdx=-1;Voice.say('start');await wait(fastMode?0:1200);this.enterChannel()}
+    else if(S.phase==='channel'){this.chooseChannel(S.channel||rnd(Object.keys(CHANNELS)))}
     else if(S.phase==='intro'){this.ask()}
     else if(S.phase==='reading'){this.open()}
-    else if(S.phase==='reveal'){if(S.qIdx>=S.nq-1||S.qIdx>=S.plan[S.roundIdx].length-1)this.enterScores();else this.ask()}
-    else if(S.phase==='scores'){if(S.roundIdx>=S.order.length-1)this.enterPodium();else{S.roundIdx++;S.qIdx=-1;this.enterIntro()}}
+    else if(S.phase==='bet'){this.afterBet()}
+    else if(S.phase==='pie'){this.afterPie()}
+    else if(S.phase==='reveal'){if(S.qIdx>=S.nq-1||(S.curType==='bomb'&&S.bomb&&S.bomb.n>=S.bomb.total))this.enterScores();else this.ask()}
+    else if(S.phase==='scores'){if(S.roundIdx>=S.order.length-1)this.enterPodium();else{S.roundIdx++;S.qIdx=-1;this.enterChannel()}}
     else if(S.phase==='podium'){ls.del('buzz.host');document.querySelector('.stage-bg')?.remove();return landing()}
   },
-  async enterIntro(){
-    const S=this.S,run=++this.run,t=S.order[S.roundIdx];S.phase='intro';
-    Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});
+  async enterChannel(){
+    const S=this.S,run=++this.run;S.phase='channel';S.curType=S.order[S.roundIdx];S.cur=null;S.bomb=null;S.channel=null;S.rankOrder=null;
+    Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle';p.bet=0});
     S.roundStart={};Object.values(S.players).forEach(p=>S.roundStart[p.id]=p.score);
-    S.prevOrder=Object.values(S.players).sort((a,b)=>b.score-a.score).map(p=>p.id);
-    this.push();
-    if(S.roundIdx===0)await Voice.say('start');if(run!==this.run)return;
+    S.prevOrder=this.board().map(p=>p.id);
+    const on=this.online();const b=this.board().filter(p=>p.online);
+    S.chooser=S.roundIdx===0?(on.length?rnd(on).id:null):(b.length?b[b.length-1].id:null); // laatste in de stand kiest
+    this.render();this.push();
+    await Voice.say('channel');if(run!==this.run)return;
+    this.startTimer(fastMode?3000:12000,()=>this.chooseChannel(rnd(Object.keys(CHANNELS).filter(k=>k!=='mix'))));
+  },
+  onChannel(p){const S=this.S;if(S.phase!=='channel'||!p||p.pid!==S.chooser||!CHANNELS[p.channel])return;this.chooseChannel(p.channel)},
+  async chooseChannel(k){
+    const S=this.S,run=++this.run;this.stopTimer();S.channel=k;S.phase='channelpick';this.render();SFX.coin();this.push();
+    await wait(fastMode?300:1500);if(run!==this.run)return;this.enterIntro();
+  },
+  async enterIntro(){
+    const S=this.S,run=++this.run,t=S.curType;S.phase='intro';this.push();
     await this.playClip(MEDIA+'video/stinger_'+t+'.mp4',5000);if(run!==this.run)return;
     SFX.whoosh();this.render();
-    const q0=S.plan[S.roundIdx][0];Voice.preload('intro_'+t,'q_'+q0.v,'a_'+q0.v);
-    await Voice.say('intro_'+t,ROUNDS[t].name+'. '+ROUNDS[t].desc);if(run!==this.run)return;
+    await Voice.say(ROUNDS[t].voice,ROUNDS[t].name+'. '+ROUNDS[t].desc);if(run!==this.run)return;
     if(!autoMode)return this.render();
     await this.countdown(run);if(run!==this.run)return;
     this.ask();
@@ -456,20 +814,29 @@ const Host={
     for(const n of [3,2,1]){if(run!==this.run)return;el.innerHTML=`<div class="count">${n}</div>`;SFX.countTick();await wait(900)}
     if(run!==this.run)return;SFX.countGo();
   },
+  resetQ(){const S=this.S;S.answers={};S.buzzOwner=null;S.locked=[];S.correct=null;S.pies=[];S.throwers=[];S.rankOrder=null;Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle';p.rank=null;p.pieTarget=null})},
   async ask(){
-    const S=this.S,run=++this.run;S.qIdx++;const t=S.order[S.roundIdx],q=this.curQ();
-    S.answers={};S.buzzOwner=null;S.locked=[];S.correct=null;Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});
-    this.stopTimer();S.phase='reading';S.timerTotal=0;this.render();this.push();
-    const nq=this.nextQ();Voice.preload('q_'+q.v,'a_'+q.v,nq&&'q_'+nq.v,nq&&'a_'+nq.v);
+    const S=this.S,run=++this.run,t=S.curType;S.qIdx++;this.resetQ();this.stopTimer();
+    if(t==='bomb')return this.startBomb();
+    if(t==='rank'){S.cur=this.pickRank();S.rankOrder=shuffle([0,1,2,3]);S.phase='reading';S.timerTotal=0;this.render();this.push();
+      Voice.preload('r_'+S.cur.v);SFX.whoosh();await wait(500);if(run!==this.run)return;
+      await Voice.say('r_'+S.cur.v,S.cur.q);if(run!==this.run)return;Voice.say('rank_go');return this.open()}
+    S.cur=this.pickQ({hard:t==='fc'});Voice.preload('q_'+S.cur.v,'a_'+S.cur.v);
+    if(t==='stakes'){S.phase='bet';Object.values(S.players).forEach(p=>p.bet=0);this.render();this.push();Voice.say('stakes_bet');this.startTimer(fastMode?3000:10000,()=>this.afterBet());return}
+    this.startReading(run);
+  },
+  async startReading(run){
+    const S=this.S;S.phase='reading';S.timerTotal=0;this.render();this.push();
     SFX.whoosh();await wait(fastMode?200:500);if(run!==this.run)return;
-    await Voice.say('q_'+q.v,q.q);if(run!==this.run)return;
+    await Voice.say('q_'+S.cur.v,S.cur.q);if(run!==this.run)return;
     this.open();
   },
-  open(){ // antwoorden/buzzers vrijgeven, timer start
-    const S=this.S,t=S.order[S.roundIdx];this.run++;
-    S.phase=t==='ps'?'buzzing':'answer';S.qStart=Date.now();
+  afterBet(){const S=this.S,run=++this.run;this.stopTimer();Object.values(S.players).forEach(p=>{if(!p.bet)p.bet=100});this.startReading(run)},
+  open(){
+    const S=this.S,t=S.curType;this.run++;
+    S.phase=t==='ps'?'buzzing':t==='rank'?'rank':'answer';S.qStart=Date.now();
     for(let i=0;i<4;i++)setTimeout(()=>SFX.flip(),120*i);
-    this.startTimer(ROUNDS[t].time,()=>t==='ps'?this.reveal('nobuzz'):this.endAnswer());
+    this.startTimer(ROUNDS[t].time,()=>t==='ps'?this.reveal('nobuzz'):t==='rank'?this.endRank():this.endAnswer());
   },
   startTimer(ms,fn){
     const S=this.S;clearTimeout(this.timer);clearInterval(this.tickTimer);S.timerEnd=Date.now()+ms;S.timerTotal=ms;
@@ -479,63 +846,139 @@ const Host={
   },
   stopTimer(){clearTimeout(this.timer);clearInterval(this.tickTimer);this.S.timerEnd=0},
   eligible(){const S=this.S;return Object.values(S.players).filter(p=>p.online&&!S.locked.includes(p.id))},
+  /* --- inkomende events --- */
   onBuzz(p){
     const S=this.S;if(S.phase!=='buzzing'||!p||!S.players[p.pid]||S.locked.includes(p.pid))return;
     S.buzzOwner=p.pid;S.players[p.pid].status='buzzed';S.phase='buzzed';SFX.buzz();
-    const f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(()=>f.remove(),800);app.classList.add('shake');setTimeout(()=>app.classList.remove('shake'),600);
+    flashScreen();app.classList.add('shake');setTimeout(()=>app.classList.remove('shake'),600);
     Voice.say(Voice.pick('buzz',3));
     this.startTimer(8000,()=>this.judgeBuzz(-1));
   },
   judgeBuzz(choice){
-    const S=this.S,q=this.curQ(),pl=S.players[S.buzzOwner];if(!pl)return this.reveal();
+    const S=this.S,q=S.cur,pl=S.players[S.buzzOwner];if(!pl)return this.reveal('nobuzz');
     if(choice===q.c){pl.score+=300;pl.delta=300;pl.status='correct';SFX.correct();return this.reveal('ok')}
     pl.score-=100;pl.delta=-100;pl.status='wrong';S.locked.push(pl.id);SFX.wrong();S.buzzOwner=null;
-    const left=this.eligible();
-    if(!left.length)return this.reveal('bad');
+    if(!this.eligible().length)return this.reveal('bad');
     S.phase='buzzing';Voice.say(Voice.pick('buzzbad',2));this.startTimer(8000,()=>this.reveal('nobuzz'));
   },
+  onBet(p){const S=this.S;if(S.phase!=='bet'||!p||!S.players[p.pid])return;const b=+p.bet;if(![100,250,500].includes(b))return;S.players[p.pid].bet=b;SFX.coin();this.renderPods();this.push();
+    if(this.online().every(x=>x.bet))this.afterBet()},
+  onRank(p){const S=this.S;if(S.phase!=='rank'||!p||!S.players[p.pid]||!Array.isArray(p.order))return;const o=p.order.map(Number);if(o.length!==4||new Set(o).size!==4||o.some(i=>!(i>=0&&i<4)))return;
+    S.players[p.pid].rank=o;S.players[p.pid].status='answered';SFX.flip();this.renderPods();this.push();if(this.online().every(x=>x.rank))this.endRank()},
+  onPie(p){const S=this.S;if(S.phase!=='pie'||!p||!S.throwers.includes(p.pid)||!S.players[p.target]||p.target===p.pid)return;const pl=S.players[p.pid];if(pl.pieTarget)return;pl.pieTarget=p.target;S.pies.push({from:p.pid,to:p.target});this.push();
+    if(S.throwers.every(id=>S.players[id].pieTarget))this.afterPie()},
   onAnswer(p,now){
     const S=this.S;if(!p||!S.players[p.pid])return;const c=+p.choice;if(!(c>=0&&c<=3))return;
     if(S.phase==='answer'){if(S.answers[p.pid]!=null)return;S.answers[p.pid]={c,t:now};S.players[p.pid].status='answered';SFX.flip();
-      const waiting=Object.values(S.players).filter(x=>x.online&&S.answers[x.id]==null);
-      if(!waiting.length)return this.endAnswer();this.renderPlayers();this.push()}
+      if(!this.online().some(x=>S.answers[x.id]==null))return this.endAnswer();this.renderPods();this.push()}
     else if(S.phase==='buzzed'&&p.pid===S.buzzOwner){this.judgeBuzz(c)}
+    else if(S.phase==='bombq'&&S.bomb&&p.pid===S.bomb.holder){this.judgeBomb(c)}
   },
+  /* --- afrondingen --- */
   endAnswer(){
-    const S=this.S,q=this.curQ(),t=S.order[S.roundIdx],T=ROUNDS[t].time;let anyOk=false,anyAns=false;
+    const S=this.S,q=S.cur,t=S.curType,T=ROUNDS[t].time;let anyOk=false,anyAns=false;
     Object.values(S.players).forEach(pl=>{const a=S.answers[pl.id];let d=0;
-      if(!a){pl.status='none'}
-      else if(a.c===q.c){pl.status='correct';anyOk=anyAns=true;const frac=Math.max(0,1-(a.t-S.qStart)/T);d=t==='pb'?150:t==='ff'?100+Math.round(400*frac):100+Math.round(300*frac)}
-      else{pl.status='wrong';anyAns=true;d=t==='fc'?-200:0}
+      if(!a){pl.status='none';if(t==='stakes'&&pl.online)d=0}
+      else if(a.c===q.c){pl.status='correct';anyOk=anyAns=true;const frac=Math.max(0,1-(a.t-S.qStart)/T);
+        d=t==='pb'?150:t==='ff'?100+Math.round(400*frac):t==='fc'?100+Math.round(300*frac):t==='pie'?100:t==='stakes'?pl.bet:150;S.streak[pl.id]=(S.streak[pl.id]||0)+1}
+      else{pl.status='wrong';anyAns=true;d=t==='fc'?-200:t==='stakes'?-pl.bet:0;S.streak[pl.id]=0}
       pl.delta=d;pl.score+=d});
+    if(t==='pie'&&anyOk){S.throwers=Object.values(S.players).filter(p=>p.status==='correct').map(p=>p.id);
+      if(this.online().length>=2){S.phase='pie';Voice.say('pie_choose');this.startTimer(fastMode?3000:9000,()=>this.afterPie());return}}
     this.reveal(anyOk?'ok':anyAns?'bad':'nobody');
   },
+  async afterPie(){
+    const S=this.S,run=++this.run;this.stopTimer();
+    // taarten vliegen: per taart -100 bij het doelwit
+    S.phase='reveal';S.correct=S.cur.c;Object.values(S.players).forEach(p=>{if(p.status==='idle'||p.status==='answered')p.status='none'});
+    this.render({countFrom:true});this.push();
+    for(const pie of S.pies){if(run!==this.run)return;const to=S.players[pie.to];if(!to)continue;this.throwPie(pie.from,pie.to);await wait(750);SFX.splat();to.score-=100;to.delta-=100;const el=document.querySelector(`.pod[data-id="${pie.to}"]`);if(el){el.classList.add('wrong');if(!el.querySelector('.splat')){const s=document.createElement('div');s.className='splat';el.appendChild(s)}const sc=el.querySelector('.s');countUp(sc,to.score+100,to.score,500)}await wait(350)}
+    if(S.pies.length){Voice.say('pie_splat')}else{Voice.say('pie_none')}
+    await wait(1200);if(run!==this.run)return;
+    this.push();this.revealTail('ok',run);
+  },
+  throwPie(from,to){const a=document.querySelector(`.pod[data-id="${from}"] .av`),b=document.querySelector(`.pod[data-id="${to}"] .av`);if(!a||!b)return;const ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect();const el=document.createElement('div');el.className='pie-fly';el.textContent='🥧';el.style.left=(ra.left+ra.width/2-24)+'px';el.style.top=(ra.top)+'px';document.body.appendChild(el);requestAnimationFrame(()=>{el.style.transform=`translate(${rb.left+rb.width/2-ra.left-ra.width/2}px,${rb.top-ra.top-ra.height*.3}px) rotate(540deg)`;el.style.opacity='0'});setTimeout(()=>el.remove(),1000)},
+  endRank(){
+    const S=this.S,q=S.cur;this.stopTimer();let kinds=[];
+    Object.values(S.players).forEach(pl=>{let d=0;if(!pl.rank){pl.status='none'}else{const correct=pl.rank.filter((shufIdx,pos)=>S.rankOrder[shufIdx]===pos).length;d=correct*100;pl.status=correct===4?'correct':correct>0?'answered':'wrong';kinds.push(correct)}pl.delta=d;pl.score+=d});
+    const best=Math.max(0,...kinds);
+    this.reveal(best===4?'rank_perfect':best>0?'rank_meh':kinds.length?'rank_zero':'nobody');
+  },
   async reveal(kind){
-    const S=this.S,run=++this.run,q=this.curQ();this.stopTimer();S.correct=q.c;S.phase='reveal';
-    Object.values(S.players).forEach(p=>{if(p.status==='idle'||p.status==='answered'||p.status==='buzzed')p.status='none'});S.buzzOwner=null;
+    const S=this.S,run=++this.run,q=S.cur;this.stopTimer();S.correct=q?.c??null;S.phase='reveal';
+    Object.values(S.players).forEach(p=>{if(p.status==='idle'||p.status==='answered'&&S.curType!=='rank'||p.status==='buzzed')p.status='none'});S.buzzOwner=null;
     if(kind==='nobuzz'&&Object.values(S.players).some(p=>p.status==='correct'))kind='ok';
-    SFX.reveal();this.patchReveal();this.push();
+    SFX.reveal();if(kind==='ok'||kind==='rank_perfect')SFX.applause();else if(kind==='nobody'||kind==='rank_zero')SFX.boo();
+    this.patchReveal();this.push();
     await wait(fastMode?300:900);if(run!==this.run)return;
-    if(kind==='nobuzz'){await Voice.say('nobuzz');if(run!==this.run)return}
-    await Voice.say('a_'+q.v,'Het juiste antwoord is '+q.a[q.c]);if(run!==this.run)return;
-    const quip=kind==='ok'?Voice.pick('ok',4):kind==='bad'?Voice.pick('bad',3):kind==='nobody'?Voice.pick('nobody',2):null;
-    if(quip){await Voice.say(quip)}if(run!==this.run)return;
+    this.revealTail(kind,run);
+  },
+  async revealTail(kind,run){
+    const S=this.S,q=S.cur,t=S.curType;
+    if(t==='rank'){await Voice.say(kind);if(run!==this.run)return}
+    else{
+      if(kind==='nobuzz'){await Voice.say('nobuzz');if(run!==this.run)return}
+      if(t==='bomb'&&kind==='boom'){await Voice.say('bomb_boom');if(run!==this.run)return}
+      await Voice.say('a_'+q.v,'Het juiste antwoord is '+q.a[q.c]);if(run!==this.run)return;
+      let quip=kind==='ok'?Voice.pick('ok',4):kind==='bad'?Voice.pick('bad',3):kind==='nobody'?Voice.pick('nobody',2):null;
+      if(t==='stakes'&&kind==='ok')quip='stakes_win';if(t==='stakes'&&kind==='bad')quip='stakes_lose';
+      if(kind==='bad'&&Math.random()<.4)quip=Voice.pick('tease',4);
+      if(quip){await Voice.say(quip);if(run!==this.run)return}
+      const lead=this.board()[0];if(lead&&S.prevLead&&S.prevLead!==lead.id&&Math.random()<.7){await Voice.say('lead');if(run!==this.run)return}S.prevLead=lead?.id;
+      const st=Object.values(S.players).find(p=>S.streak[p.id]===3);if(st){await Voice.say('streak');S.streak[st.id]=0;if(run!==this.run)return}
+    }
     if(!autoMode){this.render();return}
-    await wait(fastMode?600:1800);if(run!==this.run)return;
+    await wait(fastMode?600:1600);if(run!==this.run)return;
     this.next();
   },
+  /* --- Pass the Bomb --- */
+  startBomb(){
+    const S=this.S,on=this.online();if(!on.length)return this.enterScores();
+    const total=Math.max(1,Math.round(S.nq/2));const n=(S.bomb?.n||0)+1;
+    S.bomb={n,total,holder:rnd(on).id,fuseEnd:Date.now()+(fastMode?8000:20000+Math.random()*20000),qn:0};
+    S.qIdx=Math.min(S.qIdx,S.nq-1);
+    clearInterval(this.fuseTimer);this.fuseTimer=setInterval(()=>{if(S.phase!=='bombq'&&S.phase!=='reading')return;const r=S.bomb.fuseEnd-Date.now();if(r<6000)SFX.fuse();if(r<=0){clearInterval(this.fuseTimer);this.explode()}},300);
+    this.bombQ();
+  },
+  async bombQ(){
+    const S=this.S,run=++this.run;S.bomb.qn++;S.cur=this.pickQ();S.answers={};S.correct=null;Object.values(S.players).forEach(p=>{p.status=p.id===S.bomb.holder?'holder':'idle'});
+    S.phase='bombq';this.render();this.push();
+    await Voice.say('q_'+S.cur.v,S.cur.q);if(run!==this.run)return;
+    this.startTimer(ROUNDS.bomb.time,()=>this.judgeBomb(-1));
+  },
+  judgeBomb(c){
+    const S=this.S;if(S.phase!=='bombq')return;this.run++;this.stopTimer();const h=S.players[S.bomb.holder];
+    if(c===S.cur.c){SFX.correct();Voice.say('bomb_pass');const on=this.online().sort((a,b)=>a.order-b.order);const i=on.findIndex(p=>p.id===h.id);const nxt=on[(i+1)%on.length];if(nxt&&nxt.id!==h.id)S.bomb.holder=nxt.id}
+    else{SFX.wrong();Voice.say('bomb_stay')}
+    if(S.bomb.fuseEnd-Date.now()<1500)return; // ontploft zo
+    setTimeout(()=>{if(S.phase==='bombq')this.bombQ()},fastMode?300:1500);
+  },
+  async explode(){
+    const S=this.S,run=++this.run;this.stopTimer();if(!S.bomb)return;const h=S.players[S.bomb.holder];
+    Object.values(S.players).forEach(p=>{p.delta=0;p.status='none'});
+    if(h){h.score-=300;h.delta=-300;h.status='wrong'}Object.values(S.players).forEach(p=>{if(p.online&&p!==h){p.score+=100;p.delta=100;p.status='correct'}});
+    SFX.boom();flashScreen('white');app.classList.add('shake');setTimeout(()=>app.classList.remove('shake'),600);
+    S.phase='reveal';S.correct=S.cur?.c??null;this.render({countFrom:true});this.push();
+    await wait(1200);if(run!==this.run)return;
+    await Voice.say('bomb_boom');if(run!==this.run)return;
+    if(S.bomb.n<S.bomb.total){await wait(1500);if(run!==this.run)return;return this.startBomb()}
+    if(!autoMode){this.render();return}
+    await wait(1500);if(run!==this.run)return;this.enterScores();
+  },
+  /* --- tussenstand & podium --- */
   async enterScores(){
-    const S=this.S,run=++this.run;S.phase='scores';Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});this.render();this.push();
+    const S=this.S,run=++this.run;S.phase='scores';clearInterval(this.fuseTimer);S.bomb=null;Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});this.render();this.push();
     const last=S.roundIdx>=S.order.length-1;
     await wait(300);if(run!==this.run)return;
     await Voice.say(last?'final_intro':'scores');if(run!==this.run)return;
-    await wait(1200);if(run!==this.run)return;
+    await wait(1000);if(run!==this.run)return;
     this.flipBoard();await wait(1500);if(run!==this.run)return;
+    if(!last&&Math.random()<.5){await Voice.say(rnd(['last','close']));if(run!==this.run)return}
     if(!autoMode)return;
-    await wait(last?1500:3500);if(run!==this.run)return;
+    await wait(last?1500:3000);if(run!==this.run)return;
     this.next();
   },
-  flipBoard(){ // FLIP: rijen van oude volgorde naar nieuwe, scores tellen op
+  flipBoard(){
     const S=this.S,b=this.board(),rows=[...document.querySelectorAll('.board .r')];if(!rows.length)return;
     const before={};rows.forEach(r=>before[r.dataset.id]=r.getBoundingClientRect().top);
     const box=rows[0].parentElement;b.forEach((p,i)=>{const r=rows.find(x=>x.dataset.id===p.id);if(!r)return;box.appendChild(r);r.querySelector('.pos').textContent=i+1;r.classList.toggle('top',i===0);
@@ -552,58 +995,73 @@ const Host={
     await Voice.say('winner');if(run!==this.run)return;
     SFX.drum();await wait(fastMode?300:1800);if(run!==this.run)return;
     el(1)?.classList.add('show');const w=document.getElementById('winner');if(w){w.textContent='Winnaar: '+(b[0]?.name||'—');w.classList.add('winner')}
-    SFX.fanfare();confetti(8000);
+    SFX.fanfare();SFX.applause();confetti(8000);
     await wait(800);if(run!==this.run)return;
     await Voice.say('congrats');
   },
-  board(){return Object.values(this.S.players).sort((a,b)=>b.score-a.score)},
+  /* --- render --- */
   ctl(label,hint){return `<div class="hostctl"><span class="hint">${hint||''}</span><span class="row"><button class="btn ghost sm" data-a="voice">${voiceOn?'🎙️ stem':'🎙️ uit'}</button><button class="btn ghost sm" data-a="sound">${soundOn?'🔊':'🔇'}</button><button class="btn ghost sm ${fastMode?'on':''}" data-a="fast">⏩ snel</button>${label?`<button class="btn" data-a="next">${label}</button>`:''}</span></div>`},
-  renderPlayers(){const S=this.S,el=document.querySelector('.players');if(!el)return;el.innerHTML=this.pchips();},
-  patchReveal(){ // reveal in-place zodat tegels wegdraaien i.p.v. opnieuw renderen
+  pods(opts={}){const S=this.S,ps=Object.values(S.players).sort((a,b)=>a.order-b.order);const ah=ps.length<=4?150:ps.length<=6?130:ps.length<=8?110:90;
+    return `<div class="podia" style="--ah:${ah}px">${ps.map(p=>`<div class="pod ${p.status} ${p.online?'':'offline'} ${S.bomb&&S.bomb.holder===p.id&&S.phase==='bombq'?'holder':''}" data-id="${p.id}">${S.bomb&&S.bomb.holder===p.id&&(S.phase==='bombq'||S.phase==='reading')?'<div class="bomb">💣</div>':''}${S.curType==='stakes'&&p.bet&&S.phase!=='reveal'?`<div class="bet">${p.bet}</div>`:''}${p.delta?`<div class="d ${p.delta<0?'neg':''}">${p.delta>0?'+':''}${p.delta}</div>`:''}<img class="av" src="${charImg(p.char)}" alt=""><div class="desk"><div class="n">${esc(p.name)}</div><div class="s" data-from="${opts.countFrom?p.score-p.delta:p.score}" data-to="${p.score}">${opts.countFrom?p.score-p.delta:p.score}</div></div></div>`).join('')}</div>`},
+  renderPods(opts){const el=document.querySelector('.podia');if(!el){if(this.S.phase==='lobby')this.render();return}el.outerHTML=this.pods(opts)},
+  patchReveal(){
     const S=this.S,tiles=document.querySelectorAll('.answers .ans');
-    if(tiles.length!==4)return this.render({countFrom:true});
+    if(S.curType==='rank'||tiles.length!==4)return this.render({countFrom:true});
     tiles.forEach((el,i)=>el.classList.add(i===S.correct?'hit':'dim'));
     const bar=document.getElementById('tbar');if(bar){bar.style.transform='scaleX(0)';bar.parentElement.classList.remove('hot')}
-    const pl=document.querySelector('.players');if(pl){pl.innerHTML=this.pchips({countFrom:true});pl.querySelectorAll('.s').forEach((el,i)=>setTimeout(()=>countUp(el,+el.dataset.from,+el.dataset.to,800),600+i*80))}
+    this.renderPods({countFrom:true});document.querySelectorAll('.pod .s').forEach((el,i)=>setTimeout(()=>countUp(el,+el.dataset.from,+el.dataset.to,800),600+i*80));
     const c=document.querySelector('.hostctl');if(c)c.outerHTML=this.ctl(S.qIdx>=S.nq-1?'Stand':'Volgende',autoMode?'':'Enter = volgende');
   },
-  pchips(opts={}){const S=this.S;return Object.values(S.players).map(p=>`<div class="pl ${p.status} ${p.online?'':'offline'}"><div class="n">${esc(p.name)}</div><div class="s" data-from="${opts.countFrom?p.score-p.delta:p.score}" data-to="${p.score}">${opts.countFrom?p.score-p.delta:p.score}</div>${p.delta?`<div class="d ${p.delta<0?'neg':''}">${p.delta>0?'+':''}${p.delta}</div>`:''}</div>`).join('')},
   render(opts={}){
-    const S=this.S,q=this.curQ(),t=S.order[S.roundIdx],R=ROUNDS[t];
+    const S=this.S,q=S.cur,t=S.curType,R=ROUNDS[t]||{},CH=CHANNELS[S.channel];
     const conn=this.conn==='SUBSCRIBED'?'':`<p class="err">Verbinding: ${esc(this.conn||'bezig…')}</p>`;
     if(S.phase==='lobby'){
-      app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.4rem">BUZZ<small>QUIZ</small></div>
+      const ps=Object.values(S.players);
+      app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.2rem">BUZZ<small>QUIZ</small></div>
         <p class="muted" style="margin:0">Ga op je telefoon naar <b style="color:var(--fg)">${esc(location.host+location.pathname)}</b> en vul de code in</p>
-        <div class="code">${S.code}</div><div class="qr" id="qr"></div>
-        <div class="row">${Object.values(S.players).map(p=>`<span class="chip ${p.online?'':'off'}">${esc(p.name)}</span>`).join('')||'<span class="muted">Nog geen spelers</span>'}</div>
+        <div class="row" style="gap:24px"><div class="code">${S.code}</div><div class="qr" id="qr"></div></div>
+        <div class="lobbyav">${ps.map(p=>`<div style="${p.online?'':'opacity:.4'}"><img src="${charImg(p.char)}" alt="">${esc(p.name)}</div>`).join('')||'<span class="muted">Nog geen spelers</span>'}</div>
         ${conn}
-        <div class="row"><button class="btn" data-a="next" ${Object.keys(S.players).length?'':'disabled'}>Start (${Object.keys(S.players).length} spelers)</button><button class="btn ghost" data-a="quit">Annuleren</button></div>
+        <div class="row"><button class="btn" data-a="next" ${ps.length?'':'disabled'}>Start (${ps.length} spelers)</button><button class="btn ghost" data-a="quit">Annuleren</button></div>
         <p class="muted">${S.order.map(k=>ROUNDS[k].name).join(' · ')} · ${S.nq} vragen per ronde</p></div>`;
-      try{new QRCode(document.getElementById('qr'),{text:joinUrl(S.code),width:160,height:160})}catch(e){}
+      try{new QRCode(document.getElementById('qr'),{text:joinUrl(S.code),width:140,height:140})}catch(e){}
+    }
+    else if(S.phase==='channel'||S.phase==='channelpick'){
+      const ch=S.players[S.chooser];
+      app.innerHTML=`<div class="host"><div class="topbar"><span class="rname">${esc(R.name)}<small>Ronde ${S.roundIdx+1}/${S.order.length}</small></span><span class="qn"></span><div class="timer"><i id="tbar"></i></div></div>
+        <div class="stage"><div class="qcard"><div class="cat">Zender</div><div class="q">${S.phase==='channelpick'?`Zender: ${esc(CH.name)}`:(ch?`${esc(ch.name)} kiest de zender…`:'Zender wordt gekozen…')}</div></div>
+        <div class="chanpick">${Object.entries(CHANNELS).map(([k,c])=>`<div class="chan ${S.channel===k?'pick':''}" style="background:${c.color}">${esc(c.name)}</div>`).join('')}</div></div>
+        <div>${this.pods()}${this.ctl('','Enter = willekeurig')}</div></div>`;
     }
     else if(S.phase==='intro'){
-      app.innerHTML=`<div class="overlay" style="background:radial-gradient(ellipse at 50% 30%,${R.color}55,rgba(18,11,46,.9) 60%)"><p class="muted">Ronde ${S.roundIdx+1} van ${S.order.length}</p><h1 class="title">${esc(R.name)}</h1><p>${esc(R.desc)}</p><div id="cd" style="min-height:1em"></div>${this.ctl('Eerste vraag','Enter = overslaan')}</div>`;
+      app.innerHTML=`<div class="overlay" style="background:radial-gradient(ellipse at 50% 30%,${R.color}55,rgba(18,11,46,.9) 60%)"><p class="muted">Ronde ${S.roundIdx+1} van ${S.order.length} · ${esc(CH?.name||'')}</p><h1 class="title">${esc(R.name)}</h1><p>${esc(R.desc)}</p><div id="cd" style="min-height:1em"></div>${this.ctl('Eerste vraag','Enter = overslaan')}</div>`;
     }
     else if(S.phase==='scores'||S.phase==='podium'){
       const b=this.board(),order=S.phase==='scores'&&S.prevOrder.length?[...S.prevOrder.map(id=>S.players[id]).filter(Boolean),...b.filter(p=>!S.prevOrder.includes(p.id))]:b;
-      app.innerHTML=`<div class="overlay">${S.phase==='podium'?`<h1 id="winner">Eindstand</h1><div class="podium">${b[1]?`<div class="p2">${esc(b[1].name)}<b>${b[1].score}</b></div>`:''}${b[0]?`<div class="p1">${esc(b[0].name)}<b>${b[0].score}</b></div>`:''}${b[2]?`<div class="p3">${esc(b[2].name)}<b>${b[2].score}</b></div>`:''}</div>`:`<h1 class="title">Stand na ronde ${S.roundIdx+1}</h1>`}
-        ${S.phase==='scores'?`<div class="board">${order.map((p,i)=>`<div class="r ${i===0?'top':''}" data-id="${p.id}"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${S.roundStart[p.id]??p.score}</span></div>`).join('')}</div>`:`<div class="board">${b.map((p,i)=>`<div class="r ${i===0?'top':''}"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>`}
+      const row=(p,i,sc)=>`<div class="r ${i===0?'top':''}" data-id="${p.id}"><span class="pos">${i+1}</span><img src="${charImg(p.char)}" alt=""><span>${esc(p.name)}</span><span class="sc">${sc}</span></div>`;
+      app.innerHTML=`<div class="overlay">${S.phase==='podium'?`<h1 id="winner">Eindstand</h1><div class="podium">${b[1]?`<div class="p2"><img src="${charImg(b[1].char)}" alt="">${esc(b[1].name)}<b>${b[1].score}</b></div>`:''}${b[0]?`<div class="p1"><img src="${charImg(b[0].char)}" alt="">${esc(b[0].name)}<b>${b[0].score}</b></div>`:''}${b[2]?`<div class="p3"><img src="${charImg(b[2].char)}" alt="">${esc(b[2].name)}<b>${b[2].score}</b></div>`:''}</div>`:`<h1 class="title">Stand na ronde ${S.roundIdx+1}</h1>`}
+        <div class="board">${S.phase==='scores'?order.map((p,i)=>row(p,i,S.roundStart[p.id]??p.score)).join(''):b.map((p,i)=>row(p,i,p.score)).join('')}</div>
         ${this.ctl(S.phase==='podium'?'Nieuw spel':(S.roundIdx>=S.order.length-1?'Uitslag':'Volgende ronde'))}</div>`;
     }
     else{
       const rem=Math.max(0,S.timerEnd-Date.now()),frac=S.timerTotal?rem/S.timerTotal:0;
-      let stage;
+      let stage,title=q?.q||'',cat=q?.cat||'';
       const ansTiles=()=>`<div class="answers">${q.a.map((a,i)=>`<div class="ans c${i} ${S.phase==='reveal'?(i===S.correct?'hit':'dim'):''}"><span class="k">${KEYS[i]}</span><span>${esc(a)}</span></div>`).join('')}</div>`;
-      if(S.phase==='reading')stage=`<div class="buzzstage"><p class="muted">${t==='ps'?'Buzzers gaan zo open…':'Antwoorden komen zo…'}</p></div>`;
+      if(S.phase==='bet'){title='Plaats je inzet: 100, 250 of 500';cat=R.name;stage=`<div class="buzzstage"><div class="big">💰</div><p class="muted">${this.online().filter(p=>p.bet).length}/${this.online().length} hebben ingezet</p></div>`}
+      else if(t==='rank'&&(S.phase==='reading'||S.phase==='rank'))stage=`<div class="ranklist">${S.rankOrder.map((idx,i)=>`<div class="ri"><span class="k">${KEYS[i]}</span><span>${esc(q.items[idx])}</span></div>`).join('')}</div>`;
+      else if(t==='rank'&&S.phase==='reveal')stage=`<div class="ranklist">${q.items.map((it,i)=>`<div class="ri ok"><span class="k">${i+1}</span><span>${esc(it)}</span></div>`).join('')}</div>`;
+      else if(S.phase==='reading')stage=`<div class="buzzstage"><p class="muted">${t==='ps'?'Buzzers gaan zo open…':'Antwoorden komen zo…'}</p></div>`;
       else if(S.phase==='buzzing')stage=`<div class="buzzstage"><div class="ring"></div><div class="big">BUZZ!</div><p class="muted">${this.eligible().length} spelers mogen buzzen</p></div>`;
-      else if(S.phase==='buzzed')stage=`<div class="buzzstage"><div class="big slam">${esc(S.players[S.buzzOwner]?.name)}</div><p>kiest een antwoord op de telefoon…</p></div>`;
+      else if(S.phase==='buzzed'){const o=S.players[S.buzzOwner];stage=`<div class="buzzstage"><img class="closeup" src="${charImg(o?.char)}" alt=""><div class="big slam">${esc(o?.name)}</div><p>kiest een antwoord…</p></div>`}
+      else if(S.phase==='bombq'){const h=S.players[S.bomb?.holder];stage=`<div class="buzzstage"><div class="row"><img class="closeup" src="${charImg(h?.char)}" alt="" style="height:min(22vh,160px)"><div><div class="big">💣 ${esc(h?.name)}</div><p class="muted">antwoordt op de telefoon…</p></div></div>${ansTiles()}</div>`}
+      else if(S.phase==='pie')stage=`<div class="buzzstage"><div class="big">🥧 Taarten!</div><p class="muted">${S.throwers.map(id=>S.players[id]?.name).filter(Boolean).map(esc).join(', ')} kiezen een slachtoffer…</p></div>`;
       else stage=ansTiles();
-      const hint=S.phase==='reveal'?(autoMode?'':'Enter = volgende'):S.phase==='answer'?`${Object.keys(S.answers).length}/${Object.values(S.players).filter(p=>p.online).length} geantwoord`:S.phase==='reading'?'Enter = overslaan':'';
+      const hint=S.phase==='reveal'?(autoMode?'':'Enter = volgende'):S.phase==='answer'?`${Object.keys(S.answers).length}/${this.online().length} geantwoord`:S.phase==='reading'?'Enter = overslaan':'';
       app.innerHTML=`<div class="host">
-        <div class="topbar"><span class="rname">${esc(R.name)}</span><span class="qn">Vraag ${S.qIdx+1}/${S.nq}</span><div class="timer"><i id="tbar" style="transform:scaleX(${S.phase==='reveal'||S.phase==='reading'?0:frac})"></i></div></div>
-        <div class="stage"><div class="qcard ${S.phase==='reading'?'reading':''}"><div class="cat">${esc(q.cat)}</div><div class="q">${esc(q.q)}</div></div>${stage}</div>
-        <div><div class="players">${this.pchips(opts)}</div>${this.ctl(S.phase==='reveal'?(S.qIdx>=S.nq-1?'Stand':'Volgende'):'',hint)}</div></div>`;
-      if(opts.countFrom)document.querySelectorAll('.pl .s').forEach((el,i)=>setTimeout(()=>countUp(el,+el.dataset.from,+el.dataset.to,800),600+i*80));
+        <div class="topbar"><span class="rname">${esc(R.name)}<small>${esc(CH?.name||'')}</small></span><span class="qn">${t==='bomb'?`Bom ${S.bomb?.n||1}/${S.bomb?.total||1}`:`Vraag ${S.qIdx+1}/${S.nq}`}</span><div class="timer"><i id="tbar" style="transform:scaleX(${S.phase==='reveal'||S.phase==='reading'?0:frac})"></i></div></div>
+        <div class="stage"><div class="qcard ${S.phase==='reading'?'reading':''}"><div class="cat">${esc(cat)}</div><div class="q">${esc(title)}</div></div>${stage}</div>
+        <div>${this.pods(opts)}${this.ctl(S.phase==='reveal'?(S.qIdx>=S.nq-1?'Stand':'Volgende'):'',hint)}</div></div>`;
+      if(opts.countFrom)document.querySelectorAll('.pod .s').forEach((el,i)=>setTimeout(()=>countUp(el,+el.dataset.from,+el.dataset.to,800),600+i*80));
     }
     app.onclick=e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;audioInit();
       if(a==='next')this.next();else if(a==='sound'){soundOn=!soundOn;this.render()}else if(a==='voice'){voiceOn=!voiceOn;ls.set('buzz.voice',voiceOn);if(!voiceOn)Voice.stop();this.render()}else if(a==='fast'){fastMode=!fastMode;ls.set('buzz.fast',fastMode);if(fastMode)Voice.stop();this.render()}else if(a==='quit'){this.ch?.unsubscribe();ls.del('buzz.host');document.querySelector('.stage-bg')?.remove();landing()}};
@@ -613,34 +1071,41 @@ const Host={
 
 /* ================= PLAYER ================= */
 const Player={
-  pid:null,name:null,code:null,ch:null,S:null,sentFor:null,conn:null,wait:null,raf:null,
+  pid:null,name:null,code:null,char:null,ch:null,S:null,sentFor:null,conn:null,wait:null,raf:null,rankSel:[],
   form(code){
-    app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.4rem">BUZZ<small>QUIZ</small></div>
+    const saved=ls.get('buzz.player',{});
+    app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.2rem">BUZZ<small>QUIZ</small></div>
       <form class="stack" id="jf"><input id="jc" placeholder="Code (4 letters)" maxlength="4" autocapitalize="characters" autocomplete="off" value="${esc(code)}" style="text-align:center;font-family:var(--display);font-size:1.6rem;letter-spacing:.2em">
-      <input id="jn" placeholder="Je naam" maxlength="16" autocomplete="off" value="${esc(ls.get('buzz.player',{}).name||'')}">
+      <input id="jn" placeholder="Je naam" maxlength="16" autocomplete="off" value="${esc(saved.name||'')}">
+      <p class="muted" style="margin:4px 0 0">Kies je kandidaat</p>
+      <div class="chargrid" id="cg">${CHARS.map(([id,n])=>`<button type="button" data-ch="${id}" class="${(saved.char||'kees')===id?'me':''}"><img src="${charImg(id)}" alt="">${esc(n)}</button>`).join('')}</div>
       <button class="btn" type="submit">Meedoen</button><button class="btn ghost" type="button" data-a="back">Terug</button><p class="err" id="je"></p></form></div>`;
+    let chosen=saved.char||'kees';
+    document.getElementById('cg').onclick=e=>{const b=e.target.closest('[data-ch]');if(!b)return;chosen=b.dataset.ch;document.querySelectorAll('#cg button').forEach(x=>x.classList.toggle('me',x===b));vib(20)};
     document.getElementById('jf').onsubmit=e=>{e.preventDefault();audioInit();const c=document.getElementById('jc').value.trim().toUpperCase(),n=document.getElementById('jn').value.trim();
       if(c.length!==4||!n){document.getElementById('je').textContent='Vul een code van 4 letters en je naam in.';return}
-      const saved=ls.get('buzz.player',{});Player.join(c,n,saved.code===c?saved.pid:null)};
+      Player.join(c,n,saved.code===c?saved.pid:null,chosen)};
     app.onclick=e=>{if(e.target.closest('[data-a="back"]'))landing()};
-    (code?document.getElementById('jn'):document.getElementById('jc')).focus();
   },
-  join(code,name,pid){
-    this.code=code;this.name=name;this.pid=pid||uid();ls.set('buzz.player',{code,name,pid:this.pid});
+  join(code,name,pid,char){
+    this.code=code;this.name=name;this.pid=pid||uid();this.char=char||'kees';ls.set('buzz.player',{code,name,pid:this.pid,char:this.char});
     this.ch=sb.channel('buzz:'+code,{config:{broadcast:{self:false},presence:{key:this.pid}}});
     this.ch.on('broadcast',{event:'state'},({payload:s})=>this.onState(s))
-      .subscribe(st=>{this.conn=st;if(st==='SUBSCRIBED'){this.ch.track({pid:this.pid});this.send('join',{pid:this.pid,name});clearTimeout(this.wait);this.wait=setTimeout(()=>{if(!this.S){this.slow=true;this.render()}},4000)}this.render()});
+      .subscribe(st=>{this.conn=st;if(st==='SUBSCRIBED'){this.ch.track({pid:this.pid});this.send('join',{pid:this.pid,name,char:this.char});clearTimeout(this.wait);this.wait=setTimeout(()=>{if(!this.S){this.slow=true;this.render()}},4000)}this.render()});
     try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}this.send('hello',{pid:this.pid})}});
     this.render();
   },
   send(ev,payload){if(this.ch&&this.conn==='SUBSCRIBED')this.ch.send({type:'broadcast',event:ev,payload})},
   onState(s){if(!s||typeof s!=='object')return;const prev=this.S;this.S=s;this.tEnd=Date.now()+(s.timerMs||0);
-    if(s.qKey!==prev?.qKey)this.sentFor=null;
-    const me=this.me();
+    if(s.qKey!==prev?.qKey){this.sentFor=null;this.rankSel=[]}
+    const me=this.me();if(me)this.char=me.char;
     if(prev&&s.phase==='reveal'&&prev.phase!=='reveal'&&me){if(me.status==='correct'){SFX.correct();vib([60,40,60]);document.body.classList.add('ok-flash')}else if(me.status==='wrong'){SFX.wrong();vib(300);document.body.classList.add('bad-flash')}setTimeout(()=>document.body.classList.remove('ok-flash','bad-flash'),700)}
     if(s.phase==='buzzed'&&s.buzzOwner===this.pid&&prev?.phase!=='buzzed')vib(120);
-    if((s.phase==='answer'||s.phase==='buzzing')&&prev?.phase==='reading')vib(30);
+    if(s.phase==='bombq'&&s.bombHolder===this.pid&&prev?.bombHolder!==this.pid)vib([80,60,80]);
+    if(s.phase==='pie'&&s.throwers?.includes(this.pid)&&prev?.phase!=='pie')vib(60);
+    if(s.phase==='channel'&&s.chooser===this.pid&&prev?.phase!=='channel')vib(60);
+    if((s.phase==='answer'||s.phase==='buzzing'||s.phase==='rank')&&prev?.phase==='reading')vib(30);
     const oldScore=prev?.players.find(p=>p.id===this.pid)?.score;
     this.render();
     if(me&&oldScore!=null&&oldScore!==me.score)countUp(document.querySelector('.hdr b'),oldScore,me.score,700)},
@@ -649,23 +1114,41 @@ const Player={
   buzz(){const S=this.S;if(!S||S.phase!=='buzzing')return;this.send('buzz',{pid:this.pid});vib(80);SFX.buzz()},
   render(){
     const S=this.S,me=this.me();
-    const hdr=`<div class="hdr"><div><div>${esc(this.name)}</div><div class="st ${this.conn==='SUBSCRIBED'&&S?'on':''}">${this.conn==='SUBSCRIBED'?(S?'Verbonden · '+esc(S.code):'Wachten op host…'):'Verbinden…'}</div></div><b>${me?me.score:0}</b></div>`;
+    const hdr=`<div class="hdr"><img src="${charImg(this.char)}" alt=""><div style="flex:1;min-width:0"><div>${esc(this.name)}</div><div class="st ${this.conn==='SUBSCRIBED'&&S?'on':''}">${this.conn==='SUBSCRIBED'?(S?'Verbonden · '+esc(S.code):'Wachten op host…'):'Verbinden…'}</div></div><b>${me?me.score:0}</b></div>`;
     let body;
     const pad=(enabled)=>`<div class="pad">${S.question.a.map((a,i)=>`<button class="c${i}" data-c="${i}" ${enabled?'':'disabled'}><span class="k">${KEYS[i]}</span>${esc(a)}</button>`).join('')}</div>`;
-    const qt=()=>`<div class="qtext">${esc(S.question.q)}</div><div class="ctimer"><i id="ctbar"></i></div>`;
+    const qt=()=>`<div class="qtext">${esc(S.question?.q||'')}</div><div class="ctimer"><i id="ctbar"></i></div>`;
+    const others=()=>S.players.filter(p=>p.id!==this.pid&&p.online);
     if(!S){body=`<div class="msg"><h2>${this.conn==='SUBSCRIBED'?'Wachten op het spel':'Verbinden…'}</h2><p class="muted">${this.slow?'Nog geen antwoord van de host. Klopt de code? Het hostscherm moet open staan.':''}</p><button class="btn ghost" data-a="back">Terug</button></div>`}
     else if(!me){body=`<div class="msg"><h2>Niet toegelaten</h2><p class="muted">Het spel is vol (max 12) of al gestart.</p><button class="btn ghost" data-a="back">Terug</button></div>`}
-    else if(S.phase==='lobby'){body=`<div class="msg"><h2>Je doet mee!</h2><p class="muted">Wacht tot de host start. ${S.players.length} spelers in de lobby.</p></div>`}
+    else if(S.phase==='lobby'){body=`<div class="msg"><img src="${charImg(me.char)}" style="height:160px" alt=""><h2>Je doet mee!</h2><p class="muted">Jij bent ${esc(CHARS.find(c=>c[0]===me.char)?.[1]||'')}. Wacht tot de host start. ${S.players.length} spelers in de lobby.</p></div>`}
+    else if(S.phase==='channel'||S.phase==='channelpick'){
+      if(S.chooser===this.pid&&S.phase==='channel')body=`<div class="msg" style="flex:0"><h2>Jij kiest de zender!</h2></div><div class="chanbtns">${Object.entries(CHANNELS).map(([k,c])=>`<button data-chan="${k}" style="background:${c.color}">${esc(c.name)}</button>`).join('')}</div>`;
+      else{const ch=S.players.find(p=>p.id===S.chooser);body=`<div class="msg"><h2>${S.phase==='channelpick'?esc(CHANNELS[S.channel]?.name):'Zender'}</h2><p class="muted">${S.phase==='channelpick'?'Daar gaan we.':(ch?esc(ch.name)+' kiest de zender…':'Wachten…')}</p></div>`}}
     else if(S.phase==='intro'){body=`<div class="msg"><p class="muted">Ronde ${S.roundIdx+1}</p><h2>${esc(S.roundName)}</h2><p class="muted">${esc(S.roundDesc)}</p></div>`}
+    else if(S.phase==='bet'){const sel=me.bet;body=`<div class="msg" style="flex:0"><h2>Zet in</h2><p class="muted">Vóór je de vraag ziet. Goed: erbij. Fout: eraf.</p></div><div class="bets">${[100,250,500].map(b=>`<button data-bet="${b}" class="${sel===b?'sel':''}">${b}</button>`).join('')}</div><div class="ctimer"><i id="ctbar"></i></div>`}
     else if(S.phase==='reading'){body=qt()+`<div class="msg"><h2 style="color:var(--muted)">Luister…</h2><p class="muted">${S.roundType==='ps'?'De buzzer gaat zo open.':'De antwoorden komen zo.'}</p></div>`}
     else if(S.phase==='answer'){body=qt()+(me.status==='answered'||this.sentFor===S.qKey+':answer'?`<div class="msg"><h2>Ingediend</h2><p class="muted">Wachten op de rest…</p></div>`:pad(true))}
+    else if(S.phase==='rank'){const sent=me.status==='answered'||this.sentFor===S.qKey+':rank';const items=S.question.items||[];
+      body=qt()+(sent?`<div class="msg"><h2>Ingediend</h2></div>`:`<p class="muted" style="margin:0;text-align:center">Tik in de juiste volgorde (1 → 4)</p><div class="list">${items.map((it,i)=>{const pos=this.rankSel.indexOf(i);return `<button data-ri="${i}" class="${pos>=0?'sel':''}"><span class="k">${pos>=0?pos+1:KEYS[i]}</span>${esc(it)}</button>`}).join('')}</div><button class="btn ghost sm" data-a="rankreset">Opnieuw</button>`)}
     else if(S.phase==='buzzing'){const locked=me.status==='wrong';body=qt()+`<div class="buzzer"><button id="bz" ${locked?'disabled':''}>${locked?'FOUT':'BUZZ'}</button></div>`}
-    else if(S.phase==='buzzed'){const owner=S.players.find(p=>p.id===S.buzzOwner);body=qt()+(S.buzzOwner===this.pid?pad(this.sentFor!==S.qKey+':buzzed'):`<div class="msg"><h2>${esc(owner?.name)}</h2><p class="muted">heeft gebuzzd en antwoordt…</p></div>`)}
-    else if(S.phase==='reveal'){const ok=me.status==='correct';body=`<div class="msg"><h2 style="color:${ok?'var(--ok)':me.status==='wrong'?'var(--bad)':'var(--muted)'}">${ok?'Goed!':me.status==='wrong'?'Fout':'Geen antwoord'}</h2><div class="delta ${me.delta<0?'neg':''}">${me.delta>0?'+':''}${me.delta||0}</div><p class="muted">Antwoord: ${KEYS[S.correct]} · ${esc(S.question.a[S.correct])}</p></div>`}
-    else if(S.phase==='scores'||S.phase==='podium'){const b=S.players.slice().sort((a,b)=>b.score-a.score),pos=b.findIndex(p=>p.id===this.pid)+1;body=`<div class="msg"><p class="muted">${S.phase==='podium'?'Eindstand':'Tussenstand'}</p><h2>${pos}e plaats</h2><div class="board">${b.map((p,i)=>`<div class="r ${i===0?'top':''}"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>${S.phase==='podium'?'<button class="btn ghost" data-a="back">Klaar</button>':''}</div>`}
+    else if(S.phase==='buzzed'){const owner=S.players.find(p=>p.id===S.buzzOwner);body=qt()+(S.buzzOwner===this.pid?pad(this.sentFor!==S.qKey+':buzzed'):`<div class="msg"><img src="${charImg(owner?.char)}" style="height:120px" alt=""><h2>${esc(owner?.name)}</h2><p class="muted">heeft gebuzzd en antwoordt…</p></div>`)}
+    else if(S.phase==='bombq'){const h=S.players.find(p=>p.id===S.bombHolder);body=qt()+(S.bombHolder===this.pid?pad(this.sentFor!==S.qKey+':bombq'):`<div class="msg"><div style="font-size:3rem">💣</div><h2>${esc(h?.name)}</h2><p class="muted">heeft de bom. Hopelijk blijft hij daar.</p></div>`)}
+    else if(S.phase==='pie'){if(S.throwers?.includes(this.pid)&&!this.sentFor?.endsWith(':pie')){body=`<div class="msg" style="flex:0"><h2>🥧 Gooi een taart!</h2><p class="muted">Kies je slachtoffer (−100)</p></div><div class="list">${others().map(p=>`<button data-pie="${p.id}"><img src="${charImg(p.char)}" alt="">${esc(p.name)} <span class="muted">${p.score}</span></button>`).join('')}</div>`}
+      else body=`<div class="msg"><div style="font-size:3rem">🥧</div><h2>Taarten vliegen</h2><p class="muted">${S.throwers?.includes(this.pid)?'Taart onderweg…':'Hopelijk niet naar jou.'}</p></div>`}
+    else if(S.phase==='reveal'){const ok=me.status==='correct';const isRank=S.roundType==='rank';body=`<div class="msg"><h2 style="color:${ok?'var(--ok)':me.status==='wrong'?'var(--bad)':'var(--muted)'}">${ok?'Goed!':me.status==='wrong'?'Fout':me.status==='answered'?'Deels goed':'Geen antwoord'}</h2><div class="delta ${me.delta<0?'neg':''}">${me.delta>0?'+':''}${me.delta||0}</div>${isRank&&S.rankTruth?`<p class="muted">Juiste volgorde: ${S.rankTruth.map(esc).join(' → ')}</p>`:S.correct!=null&&S.question?`<p class="muted">Antwoord: ${KEYS[S.correct]} · ${esc(S.question.a[S.correct])}</p>`:''}</div>`}
+    else if(S.phase==='scores'||S.phase==='podium'){const b=S.players.slice().sort((a,b)=>b.score-a.score),pos=b.findIndex(p=>p.id===this.pid)+1;body=`<div class="msg"><p class="muted">${S.phase==='podium'?'Eindstand':'Tussenstand'}</p><h2>${pos}e plaats</h2><div class="board">${b.map((p,i)=>`<div class="r ${i===0?'top':''}"><span class="pos">${i+1}</span><img src="${charImg(p.char)}" alt=""><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>${S.phase==='podium'?'<button class="btn ghost" data-a="back">Klaar</button>':''}</div>`}
+    else body=`<div class="msg"><h2>…</h2></div>`;
     app.innerHTML=`<div class="ctl">${hdr}<div class="body">${body}</div></div>`;
-    app.onclick=e=>{audioInit();const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.c!=null)this.answer(+b.dataset.c);else if(b.id==='bz')this.buzz();else if(b.dataset.a==='back'){this.ch?.unsubscribe();landing()}};
+    app.onclick=e=>{audioInit();const b=e.target.closest('button');if(!b)return;const S=this.S;
+      if(b.dataset.c!=null)this.answer(+b.dataset.c);
+      else if(b.id==='bz')this.buzz();
+      else if(b.dataset.chan){this.send('channel',{pid:this.pid,channel:b.dataset.chan});vib(40)}
+      else if(b.dataset.bet){this.send('bet',{pid:this.pid,bet:+b.dataset.bet});vib(40);document.querySelectorAll('.bets button').forEach(x=>x.classList.toggle('sel',x===b))}
+      else if(b.dataset.ri!=null){const i=+b.dataset.ri;if(this.rankSel.includes(i))return;this.rankSel.push(i);vib(20);if(this.rankSel.length===4){this.sentFor=S.qKey+':rank';this.send('rank',{pid:this.pid,order:this.rankSel})}this.render()}
+      else if(b.dataset.a==='rankreset'){this.rankSel=[];this.render()}
+      else if(b.dataset.pie){this.sentFor=S.qKey+':pie';this.send('pie',{pid:this.pid,target:b.dataset.pie});vib(60);this.render()}
+      else if(b.dataset.a==='back'){this.ch?.unsubscribe();landing()}};
     cancelAnimationFrame(this.raf);const bar=document.getElementById('ctbar');
     if(bar&&S?.timerTotal){const tick=()=>{const r=Math.max(0,this.tEnd-Date.now());bar.style.transform=`scaleX(${r/S.timerTotal})`;if(r>0)this.raf=requestAnimationFrame(tick)};tick()}
   },

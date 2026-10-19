@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Bouwt index.html uit src/index.template.html + tools/questions_block.js
+# Bouwt index.html uit src/index.template.html + tools/questions_block.js + tools/rank_block.js
 cd "$(dirname "$0")/.." && python3 - <<'PY'
-html=open('src/index.template.html').read(); qs=open('tools/questions_block.js').read()
-assert '/*__QUESTIONS__*/' in html; open('index.html','w').write(html.replace('/*__QUESTIONS__*/',qs)); print('index.html gebouwd')
+html=open('src/index.template.html').read()
+for ph,f in (('/*__QUESTIONS__*/','tools/questions_block.js'),('/*__RANK__*/','tools/rank_block.js')):
+    assert ph in html, ph; html=html.replace(ph,open(f).read())
+open('index.html','w').write(html); print('index.html gebouwd', len(html))
 PY

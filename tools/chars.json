@@ -1,0 +1,62 @@
+[
+ {
+  "id": "kees",
+  "name": "Opa Kees",
+  "desc": "a cheerful elderly Dutch grandpa with a grey moustache, flat cap and a retro blue tracksuit"
+ },
+ {
+  "id": "bep",
+  "name": "Tante Bep",
+  "desc": "a warm plump grandmother with grey curly hair, glasses, a floral apron dress and a basket of knitting"
+ },
+ {
+  "id": "nova",
+  "name": "DJ Nova",
+  "desc": "a young woman DJ with purple hair, neon pink headphones around her neck and a shiny bomber jacket"
+ },
+ {
+  "id": "storm",
+  "name": "Kapitein Storm",
+  "desc": "a burly sea captain with a thick grey beard, captain's cap and navy peacoat"
+ },
+ {
+  "id": "pim",
+  "name": "Professor Pim",
+  "desc": "a skinny nerdy professor with round glasses, wild hair, bow tie and a white lab coat"
+ },
+ {
+  "id": "bo",
+  "name": "Bo de Bouwer",
+  "desc": "a stocky construction worker with a yellow hard hat, orange safety vest and a big grin"
+ },
+ {
+  "id": "yuki",
+  "name": "Yuki",
+  "desc": "a teenage skater girl with a backwards cap, oversized hoodie, holding a skateboard"
+ },
+ {
+  "id": "ravioli",
+  "name": "Sjef Ravioli",
+  "desc": "a round Italian chef with a tall white hat, curly moustache and a ladle"
+ },
+ {
+  "id": "rik",
+  "name": "Ruimte-Rik",
+  "desc": "an astronaut in a white spacesuit holding his helmet under his arm, freckles and a goofy smile"
+ },
+ {
+  "id": "lola",
+  "name": "Koningin Lola",
+  "desc": "a glamorous diva with a sparkling gold gown, tiara, long black hair and dramatic pose"
+ },
+ {
+  "id": "bas",
+  "name": "Beer Bas",
+  "desc": "a muscular bodybuilder in a tight red sports shirt and boxing gloves, square jaw"
+ },
+ {
+  "id": "r10",
+  "name": "Robot R-10",
+  "desc": "a small friendly rounded robot with a glowing screen face showing a smile, antenna and stubby arms"
+ }
+]
