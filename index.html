@@ -585,7 +585,7 @@ const Host={
       app.innerHTML=`<div class="overlay" style="background:radial-gradient(ellipse at 50% 30%,${R.color}55,rgba(18,11,46,.9) 60%)"><p class="muted">Ronde ${S.roundIdx+1} van ${S.order.length}</p><h1 class="title">${esc(R.name)}</h1><p>${esc(R.desc)}</p><div id="cd" style="min-height:1em"></div>${this.ctl('Eerste vraag','Enter = overslaan')}</div>`;
     }
     else if(S.phase==='scores'||S.phase==='podium'){
-      const b=this.board(),order=S.phase==='scores'&&S.prevOrder.length?S.prevOrder.map(id=>S.players[id]).filter(Boolean):b;
+      const b=this.board(),order=S.phase==='scores'&&S.prevOrder.length?[...S.prevOrder.map(id=>S.players[id]).filter(Boolean),...b.filter(p=>!S.prevOrder.includes(p.id))]:b;
       app.innerHTML=`<div class="overlay">${S.phase==='podium'?`<h1 id="winner">Eindstand</h1><div class="podium">${b[1]?`<div class="p2">${esc(b[1].name)}<b>${b[1].score}</b></div>`:''}${b[0]?`<div class="p1">${esc(b[0].name)}<b>${b[0].score}</b></div>`:''}${b[2]?`<div class="p3">${esc(b[2].name)}<b>${b[2].score}</b></div>`:''}</div>`:`<h1 class="title">Stand na ronde ${S.roundIdx+1}</h1>`}
         ${S.phase==='scores'?`<div class="board">${order.map((p,i)=>`<div class="r ${i===0?'top':''}" data-id="${p.id}"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${S.roundStart[p.id]??p.score}</span></div>`).join('')}</div>`:`<div class="board">${b.map((p,i)=>`<div class="r ${i===0?'top':''}"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>`}
         ${this.ctl(S.phase==='podium'?'Nieuw spel':(S.roundIdx>=S.order.length-1?'Uitslag':'Volgende ronde'))}</div>`;
