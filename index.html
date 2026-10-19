@@ -121,7 +121,7 @@ label.opt small{color:var(--muted)}
 .pod.offline{opacity:.4}
 .pod.holder .av{animation:shiver .25s infinite}
 @keyframes shiver{0%{transform:translateX(-2px) rotate(-1deg)}100%{transform:translateX(2px) rotate(1deg)}}
-.pod .bomb{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:2rem;z-index:3;animation:bob .6s infinite alternate}
+.pod .bomb{position:absolute;left:50%;top:-26px;transform:translateX(-50%);font-size:1.6rem;z-index:3;width:48px;height:48px;border-radius:50%;background:var(--b3);display:grid;place-items:center;box-shadow:0 0 24px var(--b3),0 0 0 4px rgba(255,255,255,.5);animation:bob .6s infinite alternate}
 @keyframes bob{from{transform:translateX(-50%) translateY(0)}to{transform:translateX(-50%) translateY(-8px)}}
 .pod .bet{position:absolute;right:4px;top:-10px;z-index:3;background:var(--b3);color:#0d0822;font-family:var(--display);font-size:.8rem;padding:2px 8px;border-radius:8px;animation:popup .5s both}
 .pod .d{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-family:var(--display);font-size:1rem;padding:2px 8px;border-radius:8px;background:var(--ok);color:#06291a;animation:popup .7s cubic-bezier(.2,1.6,.4,1) both;z-index:3}
@@ -861,7 +861,7 @@ const Host={
     if(!this.eligible().length)return this.reveal('bad');
     S.phase='buzzing';Voice.say(Voice.pick('buzzbad',2));this.startTimer(8000,()=>this.reveal('nobuzz'));
   },
-  onBet(p){const S=this.S;if(S.phase!=='bet'||!p||!S.players[p.pid])return;const b=+p.bet;if(![100,250,500].includes(b))return;S.players[p.pid].bet=b;SFX.coin();this.renderPods();this.push();
+  onBet(p){const S=this.S;if(S.phase!=='bet'||!p||!S.players[p.pid])return;const b=+p.bet;if(![100,250,500].includes(b))return;S.players[p.pid].bet=b;SFX.coin();this.renderPods();const bp=document.querySelector('.buzzstage p.muted');if(bp)bp.textContent=`${this.online().filter(x=>x.bet).length}/${this.online().length} hebben ingezet`;this.push();
     if(this.online().every(x=>x.bet))this.afterBet()},
   onRank(p){const S=this.S;if(S.phase!=='rank'||!p||!S.players[p.pid]||!Array.isArray(p.order))return;const o=p.order.map(Number);if(o.length!==4||new Set(o).size!==4||o.some(i=>!(i>=0&&i<4)))return;
     S.players[p.pid].rank=o;S.players[p.pid].status='answered';SFX.flip();this.renderPods();this.push();if(this.online().every(x=>x.rank))this.endRank()},
