@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#120b2e">
+<title>Buzz Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: één scherm, geen scroll. Host = podium (vraag midden, spelersbalk onder). Controller = duimbereik (knoppen onderin). */
+:root{
+  --bg:#120b2e; --panel:#1d1446; --panel2:#271b5c; --line:#3b2d7a;
+  --fg:#f6f1ff; --muted:#a899d6; --accent:#ff3d8a;
+  --b0:#2f7bff; --b1:#ff7a1a; --b2:#2ecc71; --b3:#ffd400; --buzz:#ff2d2d;
+  --ok:#2ecc71; --bad:#ff5252;
+  --display:'Bungee','Impact',sans-serif; --body:'Nunito','Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:600;-webkit-tap-highlight-color:transparent;overflow:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#app{height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.01em}
+button{font:inherit;color:inherit;border:0;cursor:pointer;background:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--b3);outline-offset:2px}
+input{font:inherit;font-weight:800;color:var(--fg);background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:14px 16px;width:100%}
+.btn{background:var(--accent);color:#fff;font-family:var(--display);font-size:1.1rem;padding:16px 28px;border-radius:14px;box-shadow:0 6px 0 #a3104f;transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #a3104f}
+.btn.ghost{background:var(--panel2);box-shadow:0 6px 0 #0d0822}
+.btn.ghost:active{box-shadow:0 2px 0 #0d0822}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.muted{color:var(--muted)}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding-block:24px}
+.stack{display:flex;flex-direction:column;gap:14px;width:min(100%,420px)}
+.logo{font-family:var(--display);font-size:clamp(2.6rem,9vw,5rem);line-height:1;color:var(--b3);text-shadow:0 .06em 0 var(--accent)}
+.logo small{display:block;font-size:.3em;color:var(--fg);text-shadow:none;letter-spacing:.3em}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.chip{background:var(--panel2);border-radius:999px;padding:8px 14px;font-weight:800}
+.chip.off{opacity:.45;text-decoration:line-through}
+.code{font-family:var(--display);font-size:clamp(3rem,14vw,7rem);letter-spacing:.12em;line-height:1;color:var(--b3)}
+.qr{background:#fff;padding:10px;border-radius:12px;display:inline-block}
+.qr img,.qr canvas{display:block}
+label.opt{display:flex;gap:10px;align-items:center;background:var(--panel2);padding:10px 14px;border-radius:12px;text-align:left}
+label.opt input{width:22px;height:22px;accent-color:var(--accent)}
+label.opt span{flex:1}
+label.opt small{color:var(--muted)}
+.err{color:var(--bad)}
+
+/* Host game screen */
+.host{flex:1;min-height:0;display:grid;grid-template-rows:auto 1fr auto;gap:14px;padding-block:14px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center}
+.topbar .rname{font-family:var(--display);font-size:1.1rem;color:var(--b3)}
+.topbar .qn{color:var(--muted);font-weight:800}
+.timer{grid-column:1/-1;height:10px;background:var(--panel);border-radius:999px;overflow:hidden}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--b3));width:100%;transform-origin:left;transition:transform .25s linear}
+.stage{display:grid;grid-template-rows:auto 1fr;gap:16px;min-height:0}
+.qcard{background:var(--panel);border-radius:20px;padding:clamp(16px,3vw,32px);display:flex;flex-direction:column;gap:10px;justify-content:center;text-align:center}
+.qcard .cat{color:var(--accent);font-weight:900;letter-spacing:.15em;text-transform:uppercase;font-size:.8rem}
+.qcard .q{font-size:clamp(1.4rem,3.6vw,2.6rem);font-weight:900;line-height:1.2}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0}
+@media (max-width:640px){.answers{grid-template-columns:1fr}}
+.ans{border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;font-size:clamp(1.1rem,2.4vw,1.8rem);font-weight:900;color:#0d0822;transition:opacity .3s,transform .3s;min-height:64px}
+.ans .k{font-family:var(--display);font-size:1.2em;opacity:.8}
+.ans.c0{background:var(--b0);color:#fff}.ans.c1{background:var(--b1)}.ans.c2{background:var(--b2);color:#0b2e1a}.ans.c3{background:var(--b3)}
+.ans.dim{opacity:.25}
+.ans.hit{outline:6px solid #fff;transform:scale(1.03);box-shadow:0 0 40px rgba(255,255,255,.35)}
+.buzzstage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:var(--panel);border-radius:20px;padding:20px;text-align:center}
+.buzzstage .big{font-family:var(--display);font-size:clamp(1.6rem,5vw,3.4rem);color:var(--b3)}
+.players{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.pl{flex:1 1 120px;min-width:120px;background:var(--panel);border-radius:14px;padding:10px 12px;display:grid;gap:4px;border:3px solid transparent;position:relative;font-variant-numeric:tabular-nums}
+.pl .n{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .s{font-family:var(--display);font-size:1.3rem}
+.pl.answered{border-color:var(--muted)}
+.pl.buzzed{border-color:var(--buzz);box-shadow:0 0 24px rgba(255,45,45,.5)}
+.pl.correct{border-color:var(--ok)}.pl.wrong{border-color:var(--bad)}.pl.locked{opacity:.4}
+.pl.offline .n::after{content:' · offline';color:var(--bad);font-weight:600;font-size:.8em}
+.pl .d{position:absolute;top:-12px;right:8px;font-family:var(--display);font-size:1rem;padding:2px 8px;border-radius:8px;background:var(--ok);color:#06291a}
+.pl .d.neg{background:var(--bad);color:#fff}
+.hostctl{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.hostctl .hint{color:var(--muted);font-size:.9rem}
+.overlay{position:fixed;inset:0;background:rgba(18,11,46,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px;z-index:5}
+.overlay h1{font-size:clamp(2rem,7vw,4.5rem);color:var(--b3)}
+.overlay p{max-width:36ch;font-size:1.2rem;margin:0}
+.board{display:grid;gap:8px;width:min(100%,520px)}
+.board .r{display:grid;grid-template-columns:2.2rem 1fr auto;gap:12px;align-items:center;background:var(--panel);padding:12px 16px;border-radius:12px;font-size:1.2rem;font-weight:900;font-variant-numeric:tabular-nums;text-align:left}
+.board .r:first-child{background:var(--accent)}
+.board .r .pos{font-family:var(--display)}
+.board .r .sc{font-family:var(--display)}
+.podium{display:flex;align-items:flex-end;gap:12px;justify-content:center}
+.podium div{width:120px;background:var(--panel2);border-radius:12px 12px 0 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:10px;gap:6px;font-weight:900}
+.podium .p1{height:220px;background:var(--b3);color:#0d0822}.podium .p2{height:170px}.podium .p3{height:130px}
+.podium b{font-family:var(--display);font-size:1.6rem}
+
+/* Controller */
+.ctl{flex:1;min-height:0;display:grid;grid-template-rows:auto 1fr;gap:12px;padding-block:12px}
+.ctl .hdr{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border-radius:12px;padding:10px 14px}
+.ctl .hdr b{font-family:var(--display);font-size:1.2rem;font-variant-numeric:tabular-nums}
+.ctl .hdr .st{font-size:.75rem;color:var(--muted)}
+.ctl .hdr .st.on{color:var(--ok)}
+.ctl .body{display:flex;flex-direction:column;gap:12px;min-height:0}
+.ctl .msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:10px}
+.ctl .msg h2{font-size:clamp(1.5rem,7vw,2.4rem)}
+.ctl .msg .delta{font-family:var(--display);font-size:3rem;color:var(--ok)}
+.ctl .msg .delta.neg{color:var(--bad)}
+.ctl .qtext{background:var(--panel);border-radius:14px;padding:14px;text-align:center;font-weight:900;font-size:1.05rem}
+.pad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;flex:1;min-height:0}
+.pad button{border-radius:20px;font-size:1.05rem;font-weight:900;color:#0d0822;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:inset 0 -8px 0 rgba(0,0,0,.18);transition:transform .08s}
+.pad button:active{transform:scale(.96)}
+.pad button[disabled]{opacity:.35}
+.pad .c0{background:var(--b0);color:#fff}.pad .c1{background:var(--b1)}.pad .c2{background:var(--b2)}.pad .c3{background:var(--b3)}
+.pad button .k{font-family:var(--display);font-size:1.6rem;opacity:.75}
+.buzzer{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.buzzer button{width:min(78vw,340px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7b7b,var(--buzz) 60%,#9c0a0a);box-shadow:0 18px 0 #6b0000,0 30px 40px rgba(0,0,0,.5);font-family:var(--display);font-size:2.4rem;color:#fff;text-shadow:0 3px 0 #7a0000;transition:transform .06s,box-shadow .06s}
+.buzzer button:active{transform:translateY(14px);box-shadow:0 4px 0 #6b0000,0 10px 20px rgba(0,0,0,.5)}
+.buzzer button[disabled]{filter:grayscale(.8);opacity:.5}
+.ctimer{height:8px;background:var(--panel);border-radius:999px;overflow:hidden}
+.ctimer i{display:block;height:100%;background:var(--accent);transform-origin:left}
+.flash{animation:flash .5s}
+@keyframes flash{0%{background:#fff}100%{background:var(--bg)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// Vragenbank v1 — NL algemene kennis. c = index van juiste optie (0-3). d = moeilijkheid 1-3.
+const QUESTIONS = [
+// Aardrijkskunde
+{cat:"Aardrijkskunde",d:1,q:"Wat is de hoofdstad van Australië?",a:["Sydney","Melbourne","Canberra","Perth"],c:2},
+{cat:"Aardrijkskunde",d:1,q:"Welke rivier stroomt door Parijs?",a:["Loire","Seine","Rhône","Garonne"],c:1},
+{cat:"Aardrijkskunde",d:2,q:"Welk land heeft de meeste tijdzones?",a:["Rusland","Verenigde Staten","Frankrijk","China"],c:2},
+{cat:"Aardrijkskunde",d:1,q:"Wat is het grootste land van Zuid-Amerika?",a:["Argentinië","Brazilië","Peru","Colombia"],c:1},
+{cat:"Aardrijkskunde",d:2,q:"Welke stad is de hoofdstad van Canada?",a:["Toronto","Vancouver","Montreal","Ottawa"],c:3},
+{cat:"Aardrijkskunde",d:1,q:"Wat is de langste rivier van Afrika?",a:["Congo","Niger","Nijl","Zambezi"],c:2},
+{cat:"Aardrijkskunde",d:2,q:"In welk land ligt de berg Kilimanjaro?",a:["Kenia","Tanzania","Oeganda","Ethiopië"],c:1},
+{cat:"Aardrijkskunde",d:3,q:"Welke zee ligt tussen Griekenland en Turkije?",a:["Adriatische Zee","Ionische Zee","Egeïsche Zee","Zwarte Zee"],c:2},
+{cat:"Aardrijkskunde",d:1,q:"Hoeveel provincies heeft Nederland?",a:["10","11","12","13"],c:2},
+{cat:"Aardrijkskunde",d:2,q:"Wat is de hoofdstad van Nieuw-Zeeland?",a:["Auckland","Wellington","Christchurch","Queenstown"],c:1},
+// Geschiedenis
+{cat:"Geschiedenis",d:1,q:"In welk jaar viel de Berlijnse Muur?",a:["1987","1989","1991","1993"],c:1},
+{cat:"Geschiedenis",d:1,q:"Wie was de eerste mens op de maan?",a:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","Michael Collins"],c:2},
+{cat:"Geschiedenis",d:2,q:"In welk jaar begon de Tachtigjarige Oorlog?",a:["1548","1568","1588","1608"],c:1},
+{cat:"Geschiedenis",d:1,q:"Welk schip zonk in 1912 na een aanvaring met een ijsberg?",a:["Lusitania","Britannic","Titanic","Olympic"],c:2},
+{cat:"Geschiedenis",d:2,q:"Wie schilderde de Nachtwacht?",a:["Vermeer","Rembrandt","Frans Hals","Jan Steen"],c:1},
+{cat:"Geschiedenis",d:3,q:"In welk jaar werd de Vrede van Münster getekend?",a:["1618","1638","1648","1658"],c:2},
+{cat:"Geschiedenis",d:1,q:"Welke Romeinse keizer liet het Colosseum voltooien?",a:["Nero","Titus","Augustus","Hadrianus"],c:1},
+{cat:"Geschiedenis",d:2,q:"Welk land schonk het Vrijheidsbeeld aan de VS?",a:["Engeland","Spanje","Frankrijk","Italië"],c:2},
+{cat:"Geschiedenis",d:2,q:"Wie was de eerste vrouwelijke premier van het Verenigd Koninkrijk?",a:["Theresa May","Margaret Thatcher","Liz Truss","Angela Merkel"],c:1},
+{cat:"Geschiedenis",d:3,q:"In welk jaar kreeg Nederland algemeen vrouwenkiesrecht?",a:["1917","1919","1922","1945"],c:1},
+// Wetenschap
+{cat:"Wetenschap",d:1,q:"Wat is het chemische symbool voor goud?",a:["Go","Gd","Au","Ag"],c:2},
+{cat:"Wetenschap",d:1,q:"Hoeveel botten heeft een volwassen mens?",a:["186","206","226","246"],c:1},
+{cat:"Wetenschap",d:2,q:"Welke planeet heeft de meeste manen?",a:["Jupiter","Saturnus","Uranus","Neptunus"],c:1},
+{cat:"Wetenschap",d:1,q:"Wat is de hardste natuurlijke stof?",a:["Graniet","Titanium","Diamant","Kwarts"],c:2},
+{cat:"Wetenschap",d:2,q:"Welk gas nemen planten op uit de lucht?",a:["Zuurstof","Stikstof","Koolstofdioxide","Waterstof"],c:2},
+{cat:"Wetenschap",d:2,q:"Hoe lang doet licht van de zon erover om de aarde te bereiken?",a:["8 seconden","8 minuten","8 uur","8 dagen"],c:1},
+{cat:"Wetenschap",d:3,q:"Wat is de eenheid van elektrische weerstand?",a:["Volt","Ampère","Watt","Ohm"],c:3},
+{cat:"Wetenschap",d:1,q:"Welk orgaan zuivert het bloed in het menselijk lichaam?",a:["Lever","Longen","Nieren","Milt"],c:2},
+{cat:"Wetenschap",d:2,q:"Bij welke temperatuur kookt water op zeeniveau (°C)?",a:["90","95","100","110"],c:2},
+{cat:"Wetenschap",d:3,q:"Wie formuleerde de relativiteitstheorie?",a:["Newton","Einstein","Bohr","Planck"],c:1},
+// Sport
+{cat:"Sport",d:1,q:"Hoeveel spelers staan er per team op het veld bij voetbal?",a:["9","10","11","12"],c:2},
+{cat:"Sport",d:1,q:"In welk land werd het WK voetbal 2022 gehouden?",a:["Rusland","Qatar","Brazilië","Zuid-Afrika"],c:1},
+{cat:"Sport",d:2,q:"Welke Nederlander won in 2021 zijn eerste F1-wereldtitel?",a:["Jos Verstappen","Nyck de Vries","Max Verstappen","Robin Frijns"],c:2},
+{cat:"Sport",d:2,q:"Hoeveel ringen staan er in het olympisch logo?",a:["4","5","6","7"],c:1},
+{cat:"Sport",d:1,q:"In welke sport wordt een shuttle gebruikt?",a:["Squash","Badminton","Tennis","Padel"],c:1},
+{cat:"Sport",d:3,q:"Hoeveel kilometer is een marathon ongeveer?",a:["40,2","41,2","42,2","43,2"],c:2},
+{cat:"Sport",d:2,q:"Welke club won de eerste Champions League (1956, toen Europacup I)?",a:["AC Milan","Real Madrid","Benfica","Ajax"],c:1},
+{cat:"Sport",d:1,q:"In welk jaar won Nederland het EK voetbal?",a:["1974","1978","1988","2010"],c:2},
+{cat:"Sport",d:2,q:"Hoeveel punten is een touchdown waard in American football?",a:["3","6","7","10"],c:1},
+{cat:"Sport",d:3,q:"Welke Nederlandse schaatser won olympisch goud op de 5 km in 2010, 2014 én 2018?",a:["Sven Kramer","Jorrit Bergsma","Patrick Roest","Bob de Jong"],c:0},
+// Muziek
+{cat:"Muziek",d:1,q:"Uit welke stad komt de band The Beatles?",a:["Londen","Manchester","Liverpool","Birmingham"],c:2},
+{cat:"Muziek",d:2,q:"Welke Nederlander won het Eurovisie Songfestival in 2019?",a:["Waylon","Duncan Laurence","Douwe Bob","Jeangu Macrooy"],c:1},
+{cat:"Muziek",d:1,q:"Hoeveel snaren heeft een standaard gitaar?",a:["4","5","6","7"],c:2},
+{cat:"Muziek",d:2,q:"Welke componist schreef 'Für Elise'?",a:["Mozart","Bach","Beethoven","Chopin"],c:2},
+{cat:"Muziek",d:1,q:"Welke Nederlandse dj is bekend van het nummer 'Animals'?",a:["Tiësto","Armin van Buuren","Martin Garrix","Hardwell"],c:2},
+{cat:"Muziek",d:2,q:"Wat is de artiestennaam van Robyn Fenty?",a:["Beyoncé","Rihanna","Adele","Sia"],c:1},
+{cat:"Muziek",d:3,q:"Welk instrument bespeelt Candy Dulfer?",a:["Trompet","Klarinet","Saxofoon","Dwarsfluit"],c:2},
+{cat:"Muziek",d:1,q:"Wie zong 'Thriller'?",a:["Prince","Michael Jackson","Stevie Wonder","Lionel Richie"],c:1},
+{cat:"Muziek",d:2,q:"Welke band bracht 'Bohemian Rhapsody' uit?",a:["Led Zeppelin","Pink Floyd","Queen","The Who"],c:2},
+{cat:"Muziek",d:3,q:"Welke Nederlandse band scoorde een wereldhit met 'Radar Love'?",a:["Shocking Blue","Golden Earring","Focus","Doe Maar"],c:1},
+// Film & TV
+{cat:"Film & TV",d:1,q:"Wie regisseerde 'Jurassic Park' (1993)?",a:["James Cameron","Steven Spielberg","George Lucas","Ridley Scott"],c:1},
+{cat:"Film & TV",d:2,q:"Welke Nederlandse film won in 1998 een Oscar voor beste niet-Engelstalige film?",a:["Turks Fruit","Soldaat van Oranje","Karakter","Antonia"],c:2},
+{cat:"Film & TV",d:1,q:"Hoe heet de tovenaarsschool in Harry Potter?",a:["Durmstrang","Beauxbatons","Zweinstein","Ilvermorny"],c:2},
+{cat:"Film & TV",d:2,q:"Welke acteur speelde Jack in 'Titanic'?",a:["Brad Pitt","Matt Damon","Leonardo DiCaprio","Johnny Depp"],c:2},
+{cat:"Film & TV",d:1,q:"In welke stad speelt de serie 'Friends' zich af?",a:["Los Angeles","Chicago","New York","Boston"],c:2},
+{cat:"Film & TV",d:3,q:"Welke Nederlandse regisseur maakte 'RoboCop' en 'Basic Instinct'?",a:["Dick Maas","Paul Verhoeven","Jan de Bont","Martin Koolhoven"],c:1},
+{cat:"Film & TV",d:2,q:"Hoeveel Oscars won 'The Lord of the Rings: The Return of the King'?",a:["7","9","11","13"],c:2},
+{cat:"Film & TV",d:1,q:"Welke kleur heeft Shrek?",a:["Blauw","Groen","Grijs","Paars"],c:1},
+{cat:"Film & TV",d:2,q:"Hoe heet het zusje van Bart Simpson?",a:["Maggie","Lisa","Marge","Patty"],c:1},
+{cat:"Film & TV",d:3,q:"Welke serie speelt zich af in het fictieve Westeros?",a:["The Witcher","Vikings","Game of Thrones","Outlander"],c:2},
+// Eten & Drinken
+{cat:"Eten & Drinken",d:1,q:"Van welke graansoort wordt sake gemaakt?",a:["Tarwe","Gerst","Rijst","Rogge"],c:2},
+{cat:"Eten & Drinken",d:1,q:"Uit welk land komt de pizza oorspronkelijk?",a:["Griekenland","Spanje","Italië","Frankrijk"],c:2},
+{cat:"Eten & Drinken",d:2,q:"Wat is het hoofdingrediënt van guacamole?",a:["Tomaat","Avocado","Courgette","Spinazie"],c:1},
+{cat:"Eten & Drinken",d:2,q:"Welke drank wordt gemaakt van de agaveplant?",a:["Rum","Wodka","Tequila","Gin"],c:2},
+{cat:"Eten & Drinken",d:1,q:"Welke noot zit in marsepein?",a:["Hazelnoot","Walnoot","Amandel","Cashew"],c:2},
+{cat:"Eten & Drinken",d:3,q:"Hoeveel liter zit er in een magnum champagne?",a:["1","1,5","2","3"],c:1},
+{cat:"Eten & Drinken",d:2,q:"Uit welk land komt het gerecht paella?",a:["Portugal","Spanje","Mexico","Italië"],c:1},
+{cat:"Eten & Drinken",d:1,q:"Wat is de belangrijkste smaakmaker in pesto?",a:["Peterselie","Koriander","Basilicum","Dille"],c:2},
+// Nederland
+{cat:"Nederland",d:1,q:"Hoe heet het hoogste punt van Nederland (Europese deel)?",a:["Vaalserberg","Drielandenpunt","Sint-Pietersberg","Grebbeberg"],c:0},
+{cat:"Nederland",d:2,q:"Welke stad heeft het oudste universiteit van Nederland?",a:["Utrecht","Groningen","Leiden","Amsterdam"],c:2},
+{cat:"Nederland",d:1,q:"Hoe heet de koning van Nederland?",a:["Willem-Alexander","Constantijn","Friso","Bernhard"],c:0},
+{cat:"Nederland",d:2,q:"In welke provincie ligt Lelystad?",a:["Overijssel","Gelderland","Flevoland","Utrecht"],c:2},
+{cat:"Nederland",d:3,q:"In welk jaar werd de Afsluitdijk voltooid?",a:["1922","1932","1942","1952"],c:1},
+{cat:"Nederland",d:1,q:"Welke Nederlandse stad staat bekend om de Martinitoren?",a:["Leeuwarden","Zwolle","Groningen","Assen"],c:2},
+{cat:"Nederland",d:2,q:"Hoe heet de Nederlandse volksvertegenwoordiging met 150 zetels?",a:["Eerste Kamer","Tweede Kamer","Raad van State","Staten-Generaal"],c:1},
+{cat:"Nederland",d:3,q:"Welke stad noemt zich de oudste stad van Nederland?",a:["Utrecht","Deventer","Nijmegen","Dordrecht"],c:2},
+// Taal & Algemeen
+{cat:"Taal",d:1,q:"Hoeveel letters heeft het Nederlandse alfabet?",a:["24","25","26","27"],c:2},
+{cat:"Taal",d:2,q:"Wat betekent het Latijnse 'carpe diem'?",a:["Ken jezelf","Pluk de dag","Veni vidi vici","Tijd vliegt"],c:1},
+{cat:"Taal",d:2,q:"Welke taal heeft wereldwijd de meeste moedertaalsprekers?",a:["Engels","Spaans","Mandarijn","Hindi"],c:2},
+{cat:"Algemeen",d:1,q:"Hoeveel kaarten zitten er in een standaard kaartspel (zonder jokers)?",a:["48","50","52","54"],c:2},
+{cat:"Algemeen",d:2,q:"Welke kleur krijg je als je blauw en geel mengt?",a:["Oranje","Paars","Groen","Bruin"],c:2},
+{cat:"Algemeen",d:1,q:"Hoeveel zijden heeft een hexagon?",a:["5","6","7","8"],c:1},
+{cat:"Algemeen",d:3,q:"Welk bedrijf maakt de PlayStation?",a:["Nintendo","Microsoft","Sony","Sega"],c:2},
+{cat:"Algemeen",d:2,q:"Hoeveel minuten duurt een normale voetbalwedstrijd zonder blessuretijd?",a:["80","90","100","120"],c:1},
+];
+
+</script>
+<script>
+'use strict';
+const SUPA_URL='https://kumksnqblhjgdhbvxcji.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1bWtzbnFibGhqZ2RoYnZ4Y2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMjUzOTcsImV4cCI6MjEwNzkwMTM5N30.tuV5kiQT3jrbGrRDcx9c-WG7eGy2yex8vtJrkeA2150';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY,{realtime:{params:{eventsPerSecond:40}}});
+
+const ROUNDS={
+  pb:{name:'Punten Bouwer',desc:'Iedereen antwoordt op z’n telefoon. Goed antwoord = +150.',time:12000,n:5},
+  ff:{name:'Snelste Vinger',desc:'Hoe sneller je goed antwoordt, hoe meer punten: van 500 naar 100.',time:10000,n:5},
+  ps:{name:'Puntendief',desc:'Buzz om te antwoorden. Goed +300. Fout −100 en de anderen mogen buzzen.',time:10000,n:5},
+  fc:{name:'Final Countdown',desc:'Punten tikken weg van 400 naar 100. Fout antwoord = −200.',time:12000,n:5},
+};
+const KEYS=['A','B','C','D'];
+const app=document.getElementById('app');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const uid=()=>Math.random().toString(36).slice(2,10);
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+
+/* ---------- Audio (gesynthetiseerd, geen assets) ---------- */
+let AC=null,soundOn=true;
+function audioInit(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(AC&&AC.state==='suspended')AC.resume()}
+function tone(f,t,type='sine',g=.25,at=0){if(!AC||!soundOn)return;const o=AC.createOscillator(),v=AC.createGain();o.type=type;o.frequency.value=f;v.gain.value=0;o.connect(v);v.connect(AC.destination);const s=AC.currentTime+at;v.gain.setValueAtTime(0,s);v.gain.linearRampToValueAtTime(g,s+.01);v.gain.exponentialRampToValueAtTime(.001,s+t);o.start(s);o.stop(s+t+.05)}
+const SFX={
+  buzz(){tone(180,.35,'sawtooth',.3)},
+  correct(){tone(660,.15,'square',.15);tone(990,.3,'square',.15,.12)},
+  wrong(){tone(130,.45,'square',.25)},
+  tick(){tone(1200,.05,'sine',.12)},
+  reveal(){tone(440,.1,'triangle',.2);tone(554,.1,'triangle',.2,.1);tone(659,.35,'triangle',.2,.2)},
+  fanfare(){[523,659,784,1047].forEach((f,i)=>tone(f,.25,'square',.15,i*.15));tone(1047,.8,'square',.15,.6)},
+  join(){tone(880,.08,'sine',.15);tone(1174,.12,'sine',.15,.08)},
+};
+
+/* ---------- Routing ---------- */
+const params=new URLSearchParams(location.search);
+const joinUrl=code=>location.origin+location.pathname+'?c='+code;
+function landing(){
+  const saved=ls.get('buzz.player',null), savedHost=ls.get('buzz.host',null);
+  app.innerHTML=`<div class="center">
+    <div class="logo">BUZZ<small>QUIZ</small></div>
+    <div class="stack">
+      ${savedHost&&savedHost.phase!=='podium'?`<button class="btn" data-a="resume">Hervat spel ${esc(savedHost.code)}</button>`:''}
+      <button class="btn" data-a="host">Nieuw spel (TV / laptop)</button>
+      <button class="btn ghost" data-a="join">Meedoen (telefoon)</button>
+      ${saved?`<button class="btn ghost" data-a="rejoin">Terug als ${esc(saved.name)} in ${esc(saved.code)}</button>`:''}
+    </div>
+    <p class="muted">Eén scherm host het spel, iedereen speelt mee op z’n telefoon.</p>
+  </div>`;
+  app.onclick=e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;audioInit();
+    if(a==='host')Host.setup();else if(a==='resume')Host.resume(savedHost);else if(a==='join')Player.form(params.get('c')||'');else if(a==='rejoin')Player.join(saved.code,saved.name,saved.pid)};
+}
+
+/* ================= HOST ================= */
+const Host={
+  S:null,ch:null,timer:null,tickTimer:null,seq:0,
+  setup(){
+    app.innerHTML=`<div class="center"><h1 style="color:var(--b3)">Nieuw spel</h1>
+      <div class="stack">
+        ${Object.entries(ROUNDS).map(([k,r])=>`<label class="opt"><input type="checkbox" id="r_${k}" checked><span>${esc(r.name)}<br><small>${esc(r.desc)}</small></span></label>`).join('')}
+        <label class="opt"><span>Vragen per ronde</span><input type="number" id="nq" value="5" min="3" max="10" style="width:80px"></label>
+        <button class="btn" data-a="create">Open de lobby</button>
+        <button class="btn ghost" data-a="back">Terug</button>
+      </div></div>`;
+    app.onclick=e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;
+      if(a==='back')return landing();
+      const order=Object.keys(ROUNDS).filter(k=>document.getElementById('r_'+k).checked);
+      if(!order.length)return;
+      const nq=Math.max(3,Math.min(10,+document.getElementById('nq').value||5));
+      Host.create(order,nq)};
+  },
+  create(order,nq){
+    const code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.random()*23|0]).join('');
+    this.S={code,order,nq,phase:'lobby',players:{},plan:null,roundIdx:0,qIdx:-1,answers:{},buzzOwner:null,locked:[],timerEnd:0,timerTotal:0,qStart:0,correct:null};
+    this.connect();this.render();
+  },
+  resume(S){this.S=S;if(['answer','buzzing','buzzed'].includes(S.phase)){S.phase='reveal';S.correct=this.curQ()?.c??null;S.buzzOwner=null;S.timerEnd=0;Object.values(S.players).forEach(p=>{p.status='none';p.delta=0})}Object.values(S.players).forEach(p=>p.online=false);this.connect();this.render()},
+  connect(){
+    const S=this.S;
+    this.ch=sb.channel('buzz:'+S.code,{config:{broadcast:{self:false,ack:false},presence:{key:'host'}}});
+    this.ch.on('broadcast',{event:'join'},({payload:p})=>this.onJoin(p))
+      .on('broadcast',{event:'hello'},()=>this.push())
+      .on('broadcast',{event:'buzz'},({payload:p})=>this.onBuzz(p))
+      .on('broadcast',{event:'answer'},({payload:p})=>this.onAnswer(p,Date.now()))
+      .on('presence',{event:'leave'},({leftPresences})=>{leftPresences.forEach(x=>{const pl=S.players[x.pid];if(pl){pl.online=false;this.render();this.push()}})})
+      .on('presence',{event:'join'},({newPresences})=>{newPresences.forEach(x=>{const pl=S.players[x.pid];if(pl&&!pl.online){pl.online=true;this.render();this.push()}})})
+      .subscribe(st=>{this.conn=st;if(st==='SUBSCRIBED'){this.ch.track({host:true});this.push()}this.render()});
+  },
+  onJoin(p){
+    if(!p||!p.pid||typeof p.name!=='string')return;const S=this.S;
+    const name=p.name.trim().slice(0,16)||'Speler';
+    if(!S.players[p.pid]){if(Object.keys(S.players).length>=12)return;S.players[p.pid]={id:p.pid,name,score:0,delta:0,status:'idle',online:true};SFX.join()}
+    else{S.players[p.pid].name=name;S.players[p.pid].online=true}
+    this.render();this.push();
+  },
+  pub(){ // publieke state voor spelers (zonder juiste antwoord, behalve bij reveal)
+    const S=this.S,q=this.curQ();
+    return {seq:++this.seq,code:S.code,phase:S.phase,roundIdx:S.roundIdx,roundType:S.order[S.roundIdx],roundName:ROUNDS[S.order[S.roundIdx]]?.name,roundDesc:ROUNDS[S.order[S.roundIdx]]?.desc,
+      qIdx:S.qIdx,qTotal:S.nq,qKey:S.roundIdx*100+S.qIdx,question:q?{q:q.q,a:q.a,cat:q.cat}:null,correct:S.phase==='reveal'?S.correct:null,
+      players:Object.values(S.players).map(p=>({id:p.id,name:p.name,score:p.score,delta:p.delta,status:p.status,online:p.online})),
+      buzzOwner:S.buzzOwner,timerMs:Math.max(0,S.timerEnd-Date.now()),timerTotal:S.timerTotal,final:S.phase==='podium'||S.phase==='scores'&&S.roundIdx>=S.order.length-1};
+  },
+  push(){if(this.ch&&this.conn==='SUBSCRIBED')this.ch.send({type:'broadcast',event:'state',payload:this.pub()});ls.set('buzz.host',this.S)},
+  curQ(){const S=this.S;return S.plan?.[S.roundIdx]?.[S.qIdx]||null},
+  buildPlan(){
+    const S=this.S,used=new Set(ls.get('buzz.used',[]));
+    let pool=QUESTIONS.filter(q=>!used.has(q.q));if(pool.length<S.order.length*S.nq){pool=QUESTIONS.slice();used.clear()}
+    pool=shuffle(pool);const plan=[];
+    for(const t of S.order){
+      let pick;
+      if(t==='fc'){pick=pool.filter(q=>q.d>=2).slice(0,S.nq)}else{pick=pool.slice(0,S.nq)}
+      if(pick.length<S.nq)pick=pool.slice(0,S.nq);
+      pool=pool.filter(q=>!pick.includes(q));plan.push(pick);pick.forEach(q=>used.add(q.q));
+    }
+    ls.set('buzz.used',[...used].slice(-200));S.plan=plan;
+  },
+  next(){
+    const S=this.S;
+    if(S.phase==='lobby'){if(!Object.keys(S.players).length)return;this.buildPlan();S.roundIdx=0;S.qIdx=-1;S.phase='intro'}
+    else if(S.phase==='intro'){this.ask()}
+    else if(S.phase==='reveal'){if(S.qIdx>=S.nq-1||S.qIdx>=S.plan[S.roundIdx].length-1){S.phase='scores'}else this.ask()}
+    else if(S.phase==='scores'){if(S.roundIdx>=S.order.length-1){S.phase='podium';SFX.fanfare()}else{S.roundIdx++;S.qIdx=-1;S.phase='intro'}}
+    else if(S.phase==='podium'){ls.del('buzz.host');return landing()}
+    else return; // mid-vraag: Enter doet niets
+    if(S.phase==='intro'||S.phase==='scores')Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});
+    this.render();this.push();
+  },
+  ask(){
+    const S=this.S;S.qIdx++;const t=S.order[S.roundIdx];
+    S.answers={};S.buzzOwner=null;S.locked=[];S.correct=null;Object.values(S.players).forEach(p=>{p.delta=0;p.status='idle'});
+    S.phase=t==='ps'?'buzzing':'answer';S.qStart=Date.now();
+    this.startTimer(ROUNDS[t].time,()=>t==='ps'?this.reveal():this.endAnswer());
+  },
+  startTimer(ms,fn){
+    const S=this.S;clearTimeout(this.timer);clearInterval(this.tickTimer);S.timerEnd=Date.now()+ms;S.timerTotal=ms;
+    this.timer=setTimeout(fn,ms);
+    this.tickTimer=setInterval(()=>{const r=S.timerEnd-Date.now();if(r<3200&&r>0&&Math.floor(r/1000)!==Math.floor((r+250)/1000))SFX.tick();const el=document.getElementById('tbar');if(el)el.style.transform=`scaleX(${Math.max(0,r/S.timerTotal)})`;if(r<=0)clearInterval(this.tickTimer)},250);
+    this.render();this.push();
+  },
+  stopTimer(){clearTimeout(this.timer);clearInterval(this.tickTimer);this.S.timerEnd=0},
+  eligible(){const S=this.S;return Object.values(S.players).filter(p=>p.online&&!S.locked.includes(p.id))},
+  onBuzz(p){
+    const S=this.S;if(S.phase!=='buzzing'||!p||!S.players[p.pid]||S.locked.includes(p.pid))return;
+    S.buzzOwner=p.pid;S.players[p.pid].status='buzzed';S.phase='buzzed';SFX.buzz();
+    this.startTimer(8000,()=>this.judgeBuzz(-1));
+  },
+  judgeBuzz(choice){
+    const S=this.S,q=this.curQ(),pl=S.players[S.buzzOwner];if(!pl)return this.reveal();
+    if(choice===q.c){pl.score+=300;pl.delta=300;pl.status='correct';SFX.correct();return this.reveal()}
+    pl.score-=100;pl.delta=-100;pl.status='wrong';S.locked.push(pl.id);SFX.wrong();S.buzzOwner=null;
+    const left=this.eligible();
+    if(!left.length)return this.reveal();
+    S.phase='buzzing';this.startTimer(8000,()=>this.reveal());
+  },
+  onAnswer(p,now){
+    const S=this.S;if(!p||!S.players[p.pid])return;const c=+p.choice;if(!(c>=0&&c<=3))return;
+    if(S.phase==='answer'){if(S.answers[p.pid]!=null)return;S.answers[p.pid]={c,t:now};S.players[p.pid].status='answered';
+      const waiting=Object.values(S.players).filter(x=>x.online&&S.answers[x.id]==null);
+      if(!waiting.length)return this.endAnswer();this.render();this.push()}
+    else if(S.phase==='buzzed'&&p.pid===S.buzzOwner){this.judgeBuzz(c)}
+  },
+  endAnswer(){
+    const S=this.S,q=this.curQ(),t=S.order[S.roundIdx],T=ROUNDS[t].time;
+    Object.values(S.players).forEach(pl=>{const a=S.answers[pl.id];let d=0;
+      if(!a){pl.status='none'}
+      else if(a.c===q.c){pl.status='correct';const frac=Math.max(0,1-(a.t-S.qStart)/T);d=t==='pb'?150:t==='ff'?100+Math.round(400*frac):100+Math.round(300*frac)}
+      else{pl.status='wrong';d=t==='fc'?-200:0}
+      pl.delta=d;pl.score+=d});
+    this.reveal();
+  },
+  reveal(){const S=this.S;this.stopTimer();S.correct=this.curQ().c;S.phase='reveal';Object.values(S.players).forEach(p=>{if(p.status==='idle'||p.status==='answered'||p.status==='buzzed')p.status='none'});S.buzzOwner=null;SFX.reveal();this.render();this.push()},
+  board(){return Object.values(this.S.players).sort((a,b)=>b.score-a.score)},
+  render(){
+    const S=this.S,q=this.curQ(),t=S.order[S.roundIdx],R=ROUNDS[t];
+    const conn=this.conn==='SUBSCRIBED'?'':`<p class="err">Verbinding: ${esc(this.conn||'bezig…')}</p>`;
+    const pchips=Object.values(S.players).map(p=>`<div class="pl ${p.status} ${p.online?'':'offline'}"><div class="n">${esc(p.name)}</div><div class="s">${p.score}</div>${p.delta?`<div class="d ${p.delta<0?'neg':''}">${p.delta>0?'+':''}${p.delta}</div>`:''}</div>`).join('');
+    const ctl=(label,hint)=>`<div class="hostctl"><span class="hint">${hint||''}</span><span class="row"><button class="btn ghost" data-a="sound">${soundOn?'🔊':'🔇'}</button>${label?`<button class="btn" data-a="next">${label}</button>`:''}</span></div>`;
+    if(S.phase==='lobby'){
+      app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.4rem">BUZZ<small>QUIZ</small></div>
+        <p class="muted" style="margin:0">Ga op je telefoon naar <b style="color:var(--fg)">${esc(location.host+location.pathname)}</b> en vul de code in</p>
+        <div class="code">${S.code}</div><div class="qr" id="qr"></div>
+        <div class="row">${Object.values(S.players).map(p=>`<span class="chip ${p.online?'':'off'}">${esc(p.name)}</span>`).join('')||'<span class="muted">Nog geen spelers</span>'}</div>
+        ${conn}
+        <div class="row"><button class="btn" data-a="next" ${Object.keys(S.players).length?'':'disabled'}>Start (${Object.keys(S.players).length} spelers)</button><button class="btn ghost" data-a="quit">Annuleren</button></div>
+        <p class="muted">${S.order.map(k=>ROUNDS[k].name).join(' · ')} · ${S.nq} vragen per ronde</p></div>`;
+      try{new QRCode(document.getElementById('qr'),{text:joinUrl(S.code),width:160,height:160})}catch(e){}
+    }
+    else if(S.phase==='intro'){
+      app.innerHTML=`<div class="overlay"><p class="muted">Ronde ${S.roundIdx+1} van ${S.order.length}</p><h1>${esc(R.name)}</h1><p>${esc(R.desc)}</p>${ctl('Eerste vraag','Enter = volgende')}</div>`;
+    }
+    else if(S.phase==='scores'||S.phase==='podium'){
+      const b=this.board();
+      app.innerHTML=`<div class="overlay">${S.phase==='podium'?`<h1>Winnaar: ${esc(b[0]?.name||'—')}</h1><div class="podium">${b[1]?`<div class="p2">${esc(b[1].name)}<b>${b[1].score}</b></div>`:''}${b[0]?`<div class="p1">${esc(b[0].name)}<b>${b[0].score}</b></div>`:''}${b[2]?`<div class="p3">${esc(b[2].name)}<b>${b[2].score}</b></div>`:''}</div>`:`<h1>Stand na ronde ${S.roundIdx+1}</h1>`}
+        <div class="board">${b.map((p,i)=>`<div class="r"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>
+        ${ctl(S.phase==='podium'?'Nieuw spel':(S.roundIdx>=S.order.length-1?'Uitslag':'Volgende ronde'))}</div>`;
+    }
+    else{
+      const rem=Math.max(0,S.timerEnd-Date.now()),frac=S.timerTotal?rem/S.timerTotal:0;
+      let stage;
+      const ansTiles=(hit)=>`<div class="answers">${q.a.map((a,i)=>`<div class="ans c${i} ${S.phase==='reveal'?(i===S.correct?'hit':'dim'):(hit===false?'dim':'')}"><span class="k">${KEYS[i]}</span><span>${esc(a)}</span></div>`).join('')}</div>`;
+      if(S.phase==='buzzing')stage=`<div class="buzzstage"><div class="big">BUZZ!</div><p class="muted">${this.eligible().length} spelers mogen buzzen</p></div>`;
+      else if(S.phase==='buzzed')stage=`<div class="buzzstage"><div class="big">${esc(S.players[S.buzzOwner]?.name)}</div><p>kiest een antwoord op de telefoon…</p></div>`;
+      else stage=ansTiles();
+      const hint=S.phase==='reveal'?'Enter = volgende':S.phase==='answer'?`${Object.keys(S.answers).length}/${Object.values(S.players).filter(p=>p.online).length} geantwoord`:'';
+      app.innerHTML=`<div class="host">
+        <div class="topbar"><span class="rname">${esc(R.name)}</span><span class="qn">Vraag ${S.qIdx+1}/${S.nq}</span><div class="timer"><i id="tbar" style="transform:scaleX(${S.phase==='reveal'?0:frac})"></i></div></div>
+        <div class="stage"><div class="qcard"><div class="cat">${esc(q.cat)}</div><div class="q">${esc(q.q)}</div></div>${stage}</div>
+        <div><div class="players">${pchips}</div>${ctl(S.phase==='reveal'?(S.qIdx>=S.nq-1?'Stand':'Volgende'):'',hint)}</div></div>`;
+    }
+    app.onclick=e=>{const a=e.target.closest('[data-a]')?.dataset.a;if(!a)return;audioInit();
+      if(a==='next')this.next();else if(a==='sound'){soundOn=!soundOn;this.render()}else if(a==='quit'){this.ch?.unsubscribe();ls.del('buzz.host');landing()}};
+    document.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){if(e.target.tagName==='INPUT')return;e.preventDefault();audioInit();this.next()}};
+  },
+};
+
+/* ================= PLAYER ================= */
+const Player={
+  pid:null,name:null,code:null,ch:null,S:null,sentFor:null,conn:null,wait:null,raf:null,
+  form(code){
+    app.innerHTML=`<div class="center"><div class="logo" style="font-size:2.4rem">BUZZ<small>QUIZ</small></div>
+      <form class="stack" id="jf"><input id="jc" placeholder="Code (4 letters)" maxlength="4" autocapitalize="characters" autocomplete="off" value="${esc(code)}" style="text-align:center;font-family:var(--display);font-size:1.6rem;letter-spacing:.2em">
+      <input id="jn" placeholder="Je naam" maxlength="16" autocomplete="off" value="${esc(ls.get('buzz.player',{}).name||'')}">
+      <button class="btn" type="submit">Meedoen</button><button class="btn ghost" type="button" data-a="back">Terug</button><p class="err" id="je"></p></form></div>`;
+    document.getElementById('jf').onsubmit=e=>{e.preventDefault();audioInit();const c=document.getElementById('jc').value.trim().toUpperCase(),n=document.getElementById('jn').value.trim();
+      if(c.length!==4||!n){document.getElementById('je').textContent='Vul een code van 4 letters en je naam in.';return}
+      const saved=ls.get('buzz.player',{});Player.join(c,n,saved.code===c?saved.pid:null)};
+    app.onclick=e=>{if(e.target.closest('[data-a="back"]'))landing()};
+    (code?document.getElementById('jn'):document.getElementById('jc')).focus();
+  },
+  join(code,name,pid){
+    this.code=code;this.name=name;this.pid=pid||uid();ls.set('buzz.player',{code,name,pid:this.pid});
+    this.ch=sb.channel('buzz:'+code,{config:{broadcast:{self:false},presence:{key:this.pid}}});
+    this.ch.on('broadcast',{event:'state'},({payload:s})=>this.onState(s))
+      .subscribe(st=>{this.conn=st;if(st==='SUBSCRIBED'){this.ch.track({pid:this.pid});this.send('join',{pid:this.pid,name});clearTimeout(this.wait);this.wait=setTimeout(()=>{if(!this.S){this.slow=true;this.render()}},4000)}this.render()});
+    try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){try{navigator.wakeLock?.request('screen').catch(()=>{})}catch(e){}this.send('hello',{pid:this.pid})}});
+    this.render();
+  },
+  send(ev,payload){if(this.ch&&this.conn==='SUBSCRIBED')this.ch.send({type:'broadcast',event:ev,payload})},
+  onState(s){if(!s||typeof s!=='object')return;const prev=this.S;this.S=s;this.tEnd=Date.now()+(s.timerMs||0);
+    if(s.qKey!==prev?.qKey)this.sentFor=null;
+    const me=this.me();
+    if(prev&&s.phase==='reveal'&&prev.phase!=='reveal'&&me){if(me.status==='correct'){SFX.correct();vib([60,40,60])}else if(me.status==='wrong'){SFX.wrong();vib(300)}}
+    if(s.phase==='buzzed'&&s.buzzOwner===this.pid&&prev?.phase!=='buzzed')vib(120);
+    this.render()},
+  me(){return this.S?.players.find(p=>p.id===this.pid)},
+  answer(c){const S=this.S;if(!S||this.sentFor===S.qKey+':'+S.phase)return;this.sentFor=S.qKey+':'+S.phase;this.send('answer',{pid:this.pid,choice:c});vib(40);this.render()},
+  buzz(){const S=this.S;if(!S||S.phase!=='buzzing'||this.sentFor===S.qKey+':buzz:'+S.players.filter(p=>p.status==='wrong').length)return;this.sentFor=S.qKey+':buzz:'+S.players.filter(p=>p.status==='wrong').length;this.send('buzz',{pid:this.pid});vib(80);SFX.buzz()},
+  render(){
+    const S=this.S,me=this.me();
+    const hdr=`<div class="hdr"><div><div>${esc(this.name)}</div><div class="st ${this.conn==='SUBSCRIBED'&&S?'on':''}">${this.conn==='SUBSCRIBED'?(S?'Verbonden · '+esc(S.code):'Wachten op host…'):'Verbinden…'}</div></div><b>${me?me.score:0}</b></div>`;
+    let body;
+    const pad=(enabled)=>`<div class="pad">${S.question.a.map((a,i)=>`<button class="c${i}" data-c="${i}" ${enabled?'':'disabled'}><span class="k">${KEYS[i]}</span>${esc(a)}</button>`).join('')}</div>`;
+    const qt=()=>`<div class="qtext">${esc(S.question.q)}</div><div class="ctimer"><i id="ctbar"></i></div>`;
+    if(!S){body=`<div class="msg"><h2>${this.conn==='SUBSCRIBED'?'Wachten op het spel':'Verbinden…'}</h2><p class="muted">${this.slow?'Nog geen antwoord van de host. Klopt de code? Het hostscherm moet open staan.':''}</p><button class="btn ghost" data-a="back">Terug</button></div>`}
+    else if(!me){body=`<div class="msg"><h2>Niet toegelaten</h2><p class="muted">Het spel is vol (max 12) of al gestart.</p><button class="btn ghost" data-a="back">Terug</button></div>`}
+    else if(S.phase==='lobby'){body=`<div class="msg"><h2>Je doet mee!</h2><p class="muted">Wacht tot de host start. ${S.players.length} spelers in de lobby.</p></div>`}
+    else if(S.phase==='intro'){body=`<div class="msg"><p class="muted">Ronde ${S.roundIdx+1}</p><h2>${esc(S.roundName)}</h2><p class="muted">${esc(S.roundDesc)}</p></div>`}
+    else if(S.phase==='answer'){body=qt()+(me.status==='answered'||this.sentFor===S.qKey+':answer'?`<div class="msg"><h2>Ingediend</h2><p class="muted">Wachten op de rest…</p></div>`:pad(true))}
+    else if(S.phase==='buzzing'){const locked=me.status==='wrong';body=qt()+`<div class="buzzer"><button id="bz" ${locked?'disabled':''}>${locked?'FOUT':'BUZZ'}</button></div>`}
+    else if(S.phase==='buzzed'){const owner=S.players.find(p=>p.id===S.buzzOwner);body=qt()+(S.buzzOwner===this.pid?pad(this.sentFor!==S.qKey+':buzzed'):`<div class="msg"><h2>${esc(owner?.name)}</h2><p class="muted">heeft gebuzzd en antwoordt…</p></div>`)}
+    else if(S.phase==='reveal'){const ok=me.status==='correct';body=`<div class="msg ${ok?'':''}"><h2 style="color:${ok?'var(--ok)':me.status==='wrong'?'var(--bad)':'var(--muted)'}">${ok?'Goed!':me.status==='wrong'?'Fout':'Geen antwoord'}</h2><div class="delta ${me.delta<0?'neg':''}">${me.delta>0?'+':''}${me.delta||0}</div><p class="muted">Antwoord: ${KEYS[S.correct]} · ${esc(S.question.a[S.correct])}</p></div>`}
+    else if(S.phase==='scores'||S.phase==='podium'){const b=S.players.slice().sort((a,b)=>b.score-a.score),pos=b.findIndex(p=>p.id===this.pid)+1;body=`<div class="msg"><p class="muted">${S.phase==='podium'?'Eindstand':'Tussenstand'}</p><h2>${pos}e plaats</h2><div class="board">${b.map((p,i)=>`<div class="r"><span class="pos">${i+1}</span><span>${esc(p.name)}</span><span class="sc">${p.score}</span></div>`).join('')}</div>${S.phase==='podium'?'<button class="btn ghost" data-a="back">Klaar</button>':''}</div>`}
+    app.innerHTML=`<div class="ctl">${hdr}<div class="body">${body}</div></div>`;
+    app.onclick=e=>{audioInit();const b=e.target.closest('button');if(!b)return;
+      if(b.dataset.c!=null)this.answer(+b.dataset.c);else if(b.id==='bz')this.buzz();else if(b.dataset.a==='back'){this.ch?.unsubscribe();landing()}};
+    cancelAnimationFrame(this.raf);const bar=document.getElementById('ctbar');
+    if(bar&&S?.timerTotal){const tick=()=>{const r=Math.max(0,this.tEnd-Date.now());bar.style.transform=`scaleX(${r/S.timerTotal})`;if(r>0)this.raf=requestAnimationFrame(tick)};tick()}
+  },
+};
+
+if(params.get('c'))Player.form(params.get('c').toUpperCase());else landing();
+</script>
+</body>
+</html>
